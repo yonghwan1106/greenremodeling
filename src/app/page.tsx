@@ -295,8 +295,7 @@ export default function Home() {
                     <Link href="/about">
                       <Button
                         size="lg"
-                        variant="outline"
-                        className="gap-2 text-lg px-8 py-6 rounded-xl border-white/30 text-white hover:bg-white/10 hover:border-teal-500/50 transition-all duration-300 backdrop-blur-sm"
+                        className="gap-2 text-lg px-8 py-6 rounded-xl bg-white/90 text-slate-900 hover:bg-white border-0 transition-all duration-300 font-semibold shadow-lg"
                       >
                         프로젝트 소개
                         <ExternalLink className="h-5 w-5" />
@@ -396,20 +395,20 @@ export default function Home() {
             {stats.map((stat, index) => (
               <div
                 key={index}
-                className="glass-card rounded-2xl p-6 text-center hover-lift group bg-slate-800/50"
+                className="rounded-2xl p-6 text-center hover-lift group bg-white border border-slate-200 shadow-lg"
               >
-                <div className="w-12 h-12 mx-auto rounded-xl bg-gradient-to-br from-teal-500/20 to-cyan-500/20 flex items-center justify-center mb-4 group-hover:scale-110 transition-transform">
-                  <stat.icon className="h-6 w-6 text-teal-400" />
+                <div className="w-12 h-12 mx-auto rounded-xl bg-gradient-to-br from-teal-500 to-cyan-500 flex items-center justify-center mb-4 group-hover:scale-110 transition-transform shadow-md">
+                  <stat.icon className="h-6 w-6 text-white" />
                 </div>
-                <div className="text-3xl sm:text-4xl font-bold text-white">
+                <div className="text-3xl sm:text-4xl font-bold text-slate-900">
                   <AnimatedCounter
                     end={stat.value}
                     suffix={stat.suffix}
                     prefix={stat.prefix}
                   />
-                  {stat.label === 'CO₂ 감축 목표' && <span className="text-lg text-slate-400 ml-1">tCO₂</span>}
+                  {stat.label === 'CO₂ 감축 목표' && <span className="text-lg text-slate-600 ml-1">tCO₂</span>}
                 </div>
-                <div className="mt-2 text-sm text-slate-400">{stat.label}</div>
+                <div className="mt-2 text-sm text-slate-600 font-medium">{stat.label}</div>
               </div>
             ))}
           </div>
@@ -440,21 +439,21 @@ export default function Home() {
                 href={feature.href}
                 className={`group ${index === 0 ? 'lg:col-span-2' : ''}`}
               >
-                <div className="h-full glass rounded-2xl p-6 hover-lift hover:border-teal-500/30 transition-all duration-300 bg-slate-800/30">
+                <div className="h-full rounded-2xl p-6 hover-lift transition-all duration-300 bg-white border border-slate-200 shadow-lg hover:shadow-xl hover:border-teal-300">
                   <div className="flex items-start justify-between mb-4">
                     <div className={`w-14 h-14 rounded-xl bg-gradient-to-br ${feature.gradient} flex items-center justify-center group-hover:scale-110 transition-transform shadow-lg`}>
                       <feature.icon className="h-7 w-7 text-white" />
                     </div>
-                    <Badge variant="outline" className="border-slate-600 text-slate-400 text-xs">
+                    <Badge className="bg-slate-100 text-slate-600 border-slate-200 text-xs font-medium">
                       {feature.stats}
                     </Badge>
                   </div>
 
-                  <h3 className="text-xl font-semibold text-white mb-2 flex items-center gap-2">
+                  <h3 className="text-xl font-bold text-slate-900 mb-2 flex items-center gap-2">
                     {feature.title}
-                    <ArrowRight className="h-4 w-4 text-slate-500 group-hover:text-teal-400 group-hover:translate-x-1 transition-all" />
+                    <ArrowRight className="h-4 w-4 text-slate-400 group-hover:text-teal-500 group-hover:translate-x-1 transition-all" />
                   </h3>
-                  <p className="text-slate-400">{feature.description}</p>
+                  <p className="text-slate-600 leading-relaxed">{feature.description}</p>
 
                   {/* Mini visualization for first card */}
                   {index === 0 && (
@@ -462,7 +461,7 @@ export default function Home() {
                       {[40, 65, 45, 80, 55, 70, 50, 75].map((h, i) => (
                         <div
                           key={i}
-                          className="flex-1 bg-gradient-to-t from-teal-500/30 to-cyan-500/30 rounded-sm"
+                          className="flex-1 bg-gradient-to-t from-teal-400 to-cyan-400 rounded-sm opacity-80"
                           style={{ height: `${h}px` }}
                         />
                       ))}
