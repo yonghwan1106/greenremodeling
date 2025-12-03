@@ -12,15 +12,19 @@ import {
   Building2,
   ChevronLeft,
   ChevronRight,
+  Home,
+  Info,
 } from 'lucide-react';
 import { useState } from 'react';
 
 const navigation = [
+  { name: '홈', href: '/', icon: Home },
   { name: '대시보드', href: '/dashboard', icon: LayoutDashboard },
   { name: '우선순위 분석', href: '/priority', icon: ListOrdered },
   { name: '벤치마킹', href: '/benchmarking', icon: GitCompare },
   { name: '시뮬레이션', href: '/simulation', icon: Calculator },
   { name: '체크리스트', href: '/checklist', icon: ClipboardCheck },
+  { name: '프로젝트 소개', href: '/about', icon: Info },
 ];
 
 export function Sidebar() {
@@ -51,7 +55,9 @@ export function Sidebar() {
       <nav className="mt-6 px-3">
         <ul className="space-y-1">
           {navigation.map((item) => {
-            const isActive = pathname.startsWith(item.href);
+            const isActive = item.href === '/'
+              ? pathname === '/'
+              : pathname.startsWith(item.href);
             return (
               <li key={item.name}>
                 <Link
