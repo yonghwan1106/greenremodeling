@@ -19,9 +19,9 @@ interface HeaderProps {
 
 export function Header({ title }: HeaderProps) {
   return (
-    <header className="sticky top-0 z-30 flex h-16 items-center justify-between border-b border-white/10 bg-slate-900/80 backdrop-blur-xl px-6">
+    <header className="sticky top-0 z-30 flex h-16 items-center justify-between border-b border-white/10 bg-slate-900/80 backdrop-blur-xl px-4 lg:px-6">
       {/* Left: Title & Search */}
-      <div className="flex items-center gap-4">
+      <div className="flex items-center gap-4 pl-12 lg:pl-0">
         {title && <h1 className="text-xl font-semibold text-white">{title}</h1>}
         <div className="relative hidden md:block">
           <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-500" />
