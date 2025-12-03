@@ -1,9 +1,10 @@
 'use client';
 
 import Link from 'next/link';
+import Image from 'next/image';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
-import { useEffect, useState, useRef } from 'react';
+import { useEffect, useState, useRef, useCallback } from 'react';
 import {
   BarChart3,
   Building2,
@@ -22,8 +23,48 @@ import {
   Shield,
   Globe,
   Sparkles,
+  ChevronLeft,
+  ChevronRight,
   ChevronDown,
+  Play,
+  Pause,
 } from 'lucide-react';
+
+// 슬라이더 이미지 데이터 (Unsplash 무료 이미지)
+const heroSlides = [
+  {
+    id: 1,
+    image: 'https://images.unsplash.com/photo-1486406146926-c627a92ad1ab?q=80&w=2070&auto=format&fit=crop',
+    title: '공공건축물',
+    highlight: '그린리모델링',
+    subtitle: '의사결정 지원 플랫폼',
+    description: '데이터 기반으로 어떤 건물을 먼저, 어떻게 리모델링할지 결정하세요',
+  },
+  {
+    id: 2,
+    image: 'https://images.unsplash.com/photo-1497366216548-37526070297c?q=80&w=2069&auto=format&fit=crop',
+    title: '에너지 효율',
+    highlight: '33.6% 절감',
+    subtitle: '탄소중립 2050 달성',
+    description: '그린리모델링으로 연간 10,000 tCO₂ 감축에 기여합니다',
+  },
+  {
+    id: 3,
+    image: 'https://images.unsplash.com/photo-1545324418-cc1a3fa10c00?q=80&w=2070&auto=format&fit=crop',
+    title: '취약계층 시설',
+    highlight: '우선 지원',
+    subtitle: '경로당 · 어린이집 · 보건소',
+    description: '고령화, 저출산, 지역소멸 문제와 그린리모델링을 연계합니다',
+  },
+  {
+    id: 4,
+    image: 'https://images.unsplash.com/photo-1577495508048-b635879837f1?q=80&w=2074&auto=format&fit=crop',
+    title: '스마트 분석',
+    highlight: 'AI 기반 추천',
+    subtitle: '5개 지표 자동 산정',
+    description: '노후도, 에너지효율, 이용자 취약도 등을 종합 분석합니다',
+  },
+];
 
 // 숫자 카운팅 애니메이션 컴포넌트
 function AnimatedCounter({ end, duration = 2000, suffix = '', prefix = '' }: {
@@ -71,23 +112,45 @@ function AnimatedCounter({ end, duration = 2000, suffix = '', prefix = '' }: {
   return <span ref={ref}>{prefix}{count.toLocaleString()}{suffix}</span>;
 }
 
-// 플로팅 카드 컴포넌트
-function FloatingCard({ children, delay = 0, className = '' }: {
-  children: React.ReactNode;
-  delay?: number;
-  className?: string;
-}) {
-  return (
-    <div
-      className={`animate-float ${className}`}
-      style={{ animationDelay: `${delay}s` }}
-    >
-      {children}
-    </div>
-  );
-}
-
 export default function Home() {
+  const [currentSlide, setCurrentSlide] = useState(0);
+  const [isPlaying, setIsPlaying] = useState(true);
+  const [isTransitioning, setIsTransitioning] = useState(false);
+  const intervalRef = useRef<NodeJS.Timeout | null>(null);
+
+  const nextSlide = useCallback(() => {
+    if (isTransitioning) return;
+    setIsTransitioning(true);
+    setCurrentSlide((prev) => (prev + 1) % heroSlides.length);
+    setTimeout(() => setIsTransitioning(false), 700);
+  }, [isTransitioning]);
+
+  const prevSlide = useCallback(() => {
+    if (isTransitioning) return;
+    setIsTransitioning(true);
+    setCurrentSlide((prev) => (prev - 1 + heroSlides.length) % heroSlides.length);
+    setTimeout(() => setIsTransitioning(false), 700);
+  }, [isTransitioning]);
+
+  const goToSlide = useCallback((index: number) => {
+    if (isTransitioning || index === currentSlide) return;
+    setIsTransitioning(true);
+    setCurrentSlide(index);
+    setTimeout(() => setIsTransitioning(false), 700);
+  }, [isTransitioning, currentSlide]);
+
+  // Auto-play
+  useEffect(() => {
+    if (isPlaying) {
+      intervalRef.current = setInterval(nextSlide, 5000);
+    }
+    return () => {
+      if (intervalRef.current) {
+        clearInterval(intervalRef.current);
+      }
+    };
+  }, [isPlaying, nextSlide]);
+
   const features = [
     {
       icon: BarChart3,
@@ -153,113 +216,175 @@ export default function Home() {
 
   return (
     <div className="min-h-screen bg-slate-950 text-white overflow-hidden">
-      {/* Hero Section - Dark with Gradient Mesh */}
-      <section className="relative min-h-screen flex items-center justify-center">
-        {/* Animated Background */}
-        <div className="absolute inset-0 gradient-mesh dark-pattern" />
-
-        {/* Floating Orbs */}
-        <div className="absolute inset-0 overflow-hidden pointer-events-none">
-          <div className="absolute top-1/4 left-1/4 w-64 h-64 bg-teal-500/20 rounded-full blur-3xl animate-float-slow" />
-          <div className="absolute bottom-1/4 right-1/4 w-96 h-96 bg-cyan-500/15 rounded-full blur-3xl animate-float-slow" style={{ animationDelay: '2s' }} />
-          <div className="absolute top-1/2 right-1/3 w-48 h-48 bg-emerald-500/10 rounded-full blur-3xl animate-float" style={{ animationDelay: '1s' }} />
-        </div>
-
-        {/* Floating Data Cards */}
-        <div className="absolute inset-0 overflow-hidden pointer-events-none hidden lg:block">
-          <FloatingCard delay={0} className="absolute top-32 left-20">
-            <div className="glass rounded-xl p-4 w-48">
-              <div className="flex items-center gap-2 text-teal-400 text-sm font-medium">
-                <Building2 className="h-4 w-4" />
-                건물 분석 완료
-              </div>
-              <div className="mt-2 text-2xl font-bold">1,247</div>
+      {/* Hero Section - Fullscreen Slider */}
+      <section className="relative h-screen w-full overflow-hidden">
+        {/* Slides */}
+        {heroSlides.map((slide, index) => (
+          <div
+            key={slide.id}
+            className={`absolute inset-0 transition-all duration-700 ease-in-out ${
+              index === currentSlide
+                ? 'opacity-100 scale-100'
+                : 'opacity-0 scale-105'
+            }`}
+          >
+            {/* Background Image */}
+            <div className="absolute inset-0">
+              <Image
+                src={slide.image}
+                alt={slide.title}
+                fill
+                className="object-cover"
+                priority={index === 0}
+                sizes="100vw"
+              />
+              {/* Overlay Gradient */}
+              <div className="absolute inset-0 bg-gradient-to-r from-slate-950/90 via-slate-950/70 to-slate-950/50" />
+              <div className="absolute inset-0 bg-gradient-to-t from-slate-950 via-transparent to-slate-950/30" />
             </div>
-          </FloatingCard>
 
-          <FloatingCard delay={0.5} className="absolute top-48 right-24">
-            <div className="glass rounded-xl p-4 w-52">
-              <div className="flex items-center gap-2 text-cyan-400 text-sm font-medium">
-                <TrendingUp className="h-4 w-4" />
-                에너지 절감률
+            {/* Content */}
+            <div className="relative z-10 h-full flex items-center">
+              <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 w-full">
+                <div className="max-w-3xl">
+                  <Badge
+                    className={`mb-6 bg-teal-500/20 text-teal-300 border border-teal-500/30 px-4 py-2 transition-all duration-500 ${
+                      index === currentSlide ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-4'
+                    }`}
+                    style={{ transitionDelay: '200ms' }}
+                  >
+                    <Sparkles className="h-3 w-3 mr-2" />
+                    제5회 그린리모델링 챌린지 출품작
+                  </Badge>
+
+                  <h1
+                    className={`text-5xl sm:text-6xl lg:text-7xl font-bold tracking-tight transition-all duration-500 ${
+                      index === currentSlide ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-4'
+                    }`}
+                    style={{ transitionDelay: '300ms' }}
+                  >
+                    <span className="block text-white">{slide.title}</span>
+                    <span className="block mt-2 text-gradient glow-text">{slide.highlight}</span>
+                    <span className="block mt-2 text-slate-300 text-4xl sm:text-5xl lg:text-6xl">{slide.subtitle}</span>
+                  </h1>
+
+                  <p
+                    className={`mt-8 text-lg sm:text-xl text-slate-400 max-w-2xl transition-all duration-500 ${
+                      index === currentSlide ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-4'
+                    }`}
+                    style={{ transitionDelay: '400ms' }}
+                  >
+                    {slide.description}
+                  </p>
+
+                  <div
+                    className={`mt-10 flex flex-col sm:flex-row items-start gap-4 transition-all duration-500 ${
+                      index === currentSlide ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-4'
+                    }`}
+                    style={{ transitionDelay: '500ms' }}
+                  >
+                    <Link href="/dashboard">
+                      <Button
+                        size="lg"
+                        className="bg-gradient-to-r from-teal-500 to-cyan-500 hover:from-teal-400 hover:to-cyan-400 text-white gap-2 text-lg px-8 py-6 rounded-xl hover-glow transition-all duration-300 border-0"
+                      >
+                        플랫폼 시작하기
+                        <ArrowRight className="h-5 w-5" />
+                      </Button>
+                    </Link>
+                    <Link href="/about">
+                      <Button
+                        size="lg"
+                        variant="outline"
+                        className="gap-2 text-lg px-8 py-6 rounded-xl border-white/30 text-white hover:bg-white/10 hover:border-teal-500/50 transition-all duration-300 backdrop-blur-sm"
+                      >
+                        프로젝트 소개
+                        <ExternalLink className="h-5 w-5" />
+                      </Button>
+                    </Link>
+                  </div>
+                </div>
               </div>
-              <div className="mt-2 text-2xl font-bold text-emerald-400">+33.6%</div>
             </div>
-          </FloatingCard>
-
-          <FloatingCard delay={1} className="absolute bottom-40 left-32">
-            <div className="glass rounded-xl p-4 w-44">
-              <div className="flex items-center gap-2 text-amber-400 text-sm font-medium">
-                <Leaf className="h-4 w-4" />
-                CO₂ 감축
-              </div>
-              <div className="mt-2 text-2xl font-bold">10,000t</div>
-            </div>
-          </FloatingCard>
-        </div>
-
-        {/* Hero Content */}
-        <div className="relative z-10 max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
-          <div className="animate-fade-in-up">
-            <Badge className="mb-6 bg-teal-500/20 text-teal-300 border border-teal-500/30 hover:bg-teal-500/30 px-4 py-2">
-              <Sparkles className="h-3 w-3 mr-2" />
-              제5회 그린리모델링 챌린지 출품작
-            </Badge>
           </div>
+        ))}
 
-          <h1 className="text-5xl sm:text-6xl lg:text-7xl font-bold tracking-tight animate-fade-in-up stagger-1">
-            <span className="block">공공건축물</span>
-            <span className="block mt-2 text-gradient glow-text">
-              그린리모델링
-            </span>
-            <span className="block mt-2 text-slate-300">의사결정 지원 플랫폼</span>
-          </h1>
+        {/* Slider Controls */}
+        <div className="absolute bottom-8 left-0 right-0 z-20">
+          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div className="flex items-center justify-between">
+              {/* Progress Indicators */}
+              <div className="flex items-center gap-3">
+                {heroSlides.map((_, index) => (
+                  <button
+                    key={index}
+                    onClick={() => goToSlide(index)}
+                    className="group relative"
+                  >
+                    <div className={`h-1 rounded-full transition-all duration-300 ${
+                      index === currentSlide ? 'w-12 bg-teal-500' : 'w-6 bg-white/30 hover:bg-white/50'
+                    }`}>
+                      {index === currentSlide && isPlaying && (
+                        <div
+                          className="absolute inset-0 bg-teal-300 rounded-full origin-left animate-progress"
+                          style={{ animationDuration: '5s' }}
+                        />
+                      )}
+                    </div>
+                  </button>
+                ))}
+              </div>
 
-          <p className="mt-8 text-lg sm:text-xl text-slate-400 max-w-3xl mx-auto animate-fade-in-up stagger-2">
-            지자체 담당자가 관내 공공건축물 중{' '}
-            <span className="text-teal-400 font-semibold">&quot;어떤 건물을 먼저, 어떻게 리모델링할지&quot;</span>
-            <br className="hidden sm:block" />
-            데이터 기반으로 의사결정할 수 있도록 지원합니다.
-          </p>
+              {/* Navigation Buttons */}
+              <div className="flex items-center gap-2">
+                <button
+                  onClick={() => setIsPlaying(!isPlaying)}
+                  className="w-10 h-10 rounded-full bg-white/10 backdrop-blur-sm border border-white/20 flex items-center justify-center text-white hover:bg-white/20 transition-all"
+                >
+                  {isPlaying ? <Pause className="h-4 w-4" /> : <Play className="h-4 w-4" />}
+                </button>
+                <button
+                  onClick={prevSlide}
+                  className="w-10 h-10 rounded-full bg-white/10 backdrop-blur-sm border border-white/20 flex items-center justify-center text-white hover:bg-white/20 transition-all"
+                >
+                  <ChevronLeft className="h-5 w-5" />
+                </button>
+                <button
+                  onClick={nextSlide}
+                  className="w-10 h-10 rounded-full bg-white/10 backdrop-blur-sm border border-white/20 flex items-center justify-center text-white hover:bg-white/20 transition-all"
+                >
+                  <ChevronRight className="h-5 w-5" />
+                </button>
+              </div>
+            </div>
 
-          <div className="mt-12 flex flex-col sm:flex-row items-center justify-center gap-4 animate-fade-in-up stagger-3">
-            <Link href="/dashboard">
-              <Button
-                size="lg"
-                className="bg-gradient-to-r from-teal-500 to-cyan-500 hover:from-teal-400 hover:to-cyan-400 text-white gap-2 text-lg px-8 py-6 rounded-xl hover-glow transition-all duration-300 border-0"
+            {/* Slide Counter & Download */}
+            <div className="mt-6 flex items-center justify-between">
+              <div className="flex items-center gap-4">
+                <span className="text-3xl font-bold text-white">0{currentSlide + 1}</span>
+                <span className="text-slate-500">/</span>
+                <span className="text-slate-500">0{heroSlides.length}</span>
+              </div>
+              <a
+                href="/GRDP_제안서.pdf"
+                download
+                className="inline-flex items-center gap-2 text-slate-400 hover:text-teal-400 font-medium transition-colors"
               >
-                플랫폼 시작하기
-                <ArrowRight className="h-5 w-5" />
-              </Button>
-            </Link>
-            <Link href="/about">
-              <Button
-                size="lg"
-                variant="outline"
-                className="gap-2 text-lg px-8 py-6 rounded-xl border-slate-600 text-slate-300 hover:bg-white/5 hover:border-teal-500/50 transition-all duration-300"
-              >
-                프로젝트 소개
-                <ExternalLink className="h-5 w-5" />
-              </Button>
-            </Link>
-          </div>
-
-          <div className="mt-8 animate-fade-in-up stagger-4">
-            <a
-              href="/GRDP_제안서.pdf"
-              download
-              className="inline-flex items-center gap-2 text-slate-400 hover:text-teal-400 font-medium transition-colors"
-            >
-              <Download className="h-4 w-4" />
-              제안서 다운로드 (PDF)
-            </a>
-          </div>
-
-          {/* Scroll Indicator */}
-          <div className="absolute bottom-8 left-1/2 -translate-x-1/2 animate-bounce">
-            <ChevronDown className="h-8 w-8 text-slate-500" />
+                <Download className="h-4 w-4" />
+                제안서 다운로드 (PDF)
+              </a>
+            </div>
           </div>
         </div>
+
+        {/* Scroll Indicator */}
+        <div className="absolute bottom-32 left-1/2 -translate-x-1/2 z-20 animate-bounce hidden lg:block">
+          <ChevronDown className="h-8 w-8 text-white/50" />
+        </div>
+
+        {/* Side Gradient Accents */}
+        <div className="absolute top-0 right-0 w-1/3 h-full bg-gradient-to-l from-teal-500/10 to-transparent pointer-events-none" />
+        <div className="absolute bottom-0 left-0 w-full h-1/3 bg-gradient-to-t from-slate-950 to-transparent pointer-events-none" />
       </section>
 
       {/* Stats Section - Glass Cards */}
@@ -510,6 +635,17 @@ export default function Home() {
           공동체 문제해결과 그린리모델링을 연계할 수 있는 정책
         </p>
       </div>
+
+      {/* CSS for progress animation */}
+      <style jsx>{`
+        @keyframes progress {
+          from { transform: scaleX(0); }
+          to { transform: scaleX(1); }
+        }
+        .animate-progress {
+          animation: progress linear forwards;
+        }
+      `}</style>
     </div>
   );
 }
