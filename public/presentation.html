@@ -1,0 +1,3713 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>GRDP - 공공건축물 그린리모델링 의사결정 지원 플랫폼</title>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;700;900&family=Space+Grotesk:wght@400;500;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary: #00D9A5;
+            --primary-dark: #00B88A;
+            --secondary: #1A1A2E;
+            --accent: #FF6B35;
+            --accent-2: #845EC2;
+            --bg-dark: #0F0F1A;
+            --bg-card: #16162A;
+            --bg-gradient: linear-gradient(135deg, #0F0F1A 0%, #1A1A2E 50%, #16162A 100%);
+            --text-light: #FFFFFF;
+            --text-muted: #A0A0B0;
+            --glow: 0 0 40px rgba(0, 217, 165, 0.3);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        html {
+            scroll-behavior: smooth;
+        }
+
+        body {
+            font-family: 'Noto Sans KR', sans-serif;
+            background: var(--bg-dark);
+            color: var(--text-light);
+            line-height: 1.8;
+            overflow-x: hidden;
+        }
+
+        /* Animated Background */
+        .bg-animation {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -1;
+            background: var(--bg-gradient);
+        }
+
+        .bg-animation::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background:
+                radial-gradient(circle at 20% 80%, rgba(0, 217, 165, 0.1) 0%, transparent 50%),
+                radial-gradient(circle at 80% 20%, rgba(132, 94, 194, 0.1) 0%, transparent 50%),
+                radial-gradient(circle at 40% 40%, rgba(255, 107, 53, 0.05) 0%, transparent 40%);
+            animation: pulse 8s ease-in-out infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.7; }
+        }
+
+        /* Navigation */
+        nav {
+            position: fixed;
+            top: 0;
+            width: 100%;
+            padding: 1rem 2rem;
+            background: rgba(15, 15, 26, 0.9);
+            backdrop-filter: blur(20px);
+            z-index: 1000;
+            border-bottom: 1px solid rgba(0, 217, 165, 0.2);
+        }
+
+        nav ul {
+            display: flex;
+            justify-content: center;
+            gap: 2rem;
+            list-style: none;
+            flex-wrap: wrap;
+        }
+
+        nav a {
+            color: var(--text-muted);
+            text-decoration: none;
+            font-size: 0.9rem;
+            font-weight: 500;
+            transition: all 0.3s ease;
+            padding: 0.5rem 1rem;
+            border-radius: 20px;
+        }
+
+        nav a:hover {
+            color: var(--primary);
+            background: rgba(0, 217, 165, 0.1);
+        }
+
+        /* Hero Section */
+        .hero {
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            padding: 6rem 2rem;
+            position: relative;
+        }
+
+        .hero-content {
+            max-width: 900px;
+        }
+
+        .hero-badge {
+            display: inline-block;
+            padding: 0.5rem 1.5rem;
+            background: rgba(0, 217, 165, 0.1);
+            border: 1px solid var(--primary);
+            border-radius: 30px;
+            font-size: 0.85rem;
+            color: var(--primary);
+            margin-bottom: 2rem;
+            animation: fadeInUp 0.8s ease;
+        }
+
+        .hero h1 {
+            font-family: 'Space Grotesk', sans-serif;
+            font-size: clamp(2.5rem, 6vw, 4.5rem);
+            font-weight: 700;
+            line-height: 1.2;
+            margin-bottom: 1.5rem;
+            background: linear-gradient(135deg, var(--text-light) 0%, var(--primary) 50%, var(--accent-2) 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            animation: fadeInUp 0.8s ease 0.2s both;
+        }
+
+        .hero-subtitle {
+            font-size: 1.3rem;
+            color: var(--text-muted);
+            margin-bottom: 3rem;
+            animation: fadeInUp 0.8s ease 0.4s both;
+        }
+
+        .hero-stats {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 2rem;
+            margin-top: 4rem;
+            animation: fadeInUp 0.8s ease 0.6s both;
+        }
+
+        .stat-item {
+            text-align: center;
+        }
+
+        .stat-number {
+            font-family: 'Space Grotesk', sans-serif;
+            font-size: 2.5rem;
+            font-weight: 700;
+            color: var(--primary);
+            display: block;
+        }
+
+        .stat-label {
+            font-size: 0.9rem;
+            color: var(--text-muted);
+        }
+
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        /* Section Styles */
+        section {
+            padding: 6rem 2rem;
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+
+        .section-header {
+            text-align: center;
+            margin-bottom: 4rem;
+        }
+
+        .section-tag {
+            display: inline-block;
+            padding: 0.3rem 1rem;
+            background: rgba(132, 94, 194, 0.2);
+            border-radius: 20px;
+            font-size: 0.8rem;
+            color: var(--accent-2);
+            margin-bottom: 1rem;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+        }
+
+        .section-title {
+            font-size: clamp(2rem, 4vw, 3rem);
+            font-weight: 700;
+            margin-bottom: 1rem;
+        }
+
+        .section-desc {
+            color: var(--text-muted);
+            max-width: 700px;
+            margin: 0 auto;
+        }
+
+        /* Cards */
+        .card {
+            background: var(--bg-card);
+            border-radius: 24px;
+            padding: 2rem;
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            transition: all 0.4s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 3px;
+            background: linear-gradient(90deg, var(--primary), var(--accent-2));
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+
+        .card:hover {
+            transform: translateY(-5px);
+            border-color: rgba(0, 217, 165, 0.3);
+            box-shadow: var(--glow);
+        }
+
+        .card:hover::before {
+            opacity: 1;
+        }
+
+        /* Problem Section */
+        .problems-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+            gap: 2rem;
+        }
+
+        .problem-card {
+            background: linear-gradient(145deg, rgba(255, 107, 53, 0.1), rgba(22, 22, 42, 0.8));
+            border-left: 4px solid var(--accent);
+        }
+
+        .problem-icon {
+            width: 60px;
+            height: 60px;
+            background: rgba(255, 107, 53, 0.2);
+            border-radius: 16px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .problem-title {
+            font-size: 1.3rem;
+            font-weight: 600;
+            margin-bottom: 1rem;
+        }
+
+        .problem-desc {
+            color: var(--text-muted);
+            font-size: 0.95rem;
+        }
+
+        .quote-box {
+            background: rgba(0, 0, 0, 0.3);
+            border-radius: 12px;
+            padding: 1rem 1.5rem;
+            margin-top: 1.5rem;
+            font-style: italic;
+            font-size: 0.9rem;
+            color: var(--text-muted);
+            border-left: 3px solid var(--accent);
+        }
+
+        /* Statistics Section */
+        .stats-container {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 2rem;
+        }
+
+        .stats-visual {
+            background: var(--bg-card);
+            border-radius: 24px;
+            padding: 2.5rem;
+            border: 1px solid rgba(255, 255, 255, 0.05);
+        }
+
+        .stats-title {
+            font-size: 1.1rem;
+            font-weight: 600;
+            margin-bottom: 2rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .bar-chart {
+            display: flex;
+            flex-direction: column;
+            gap: 1.5rem;
+        }
+
+        .bar-item {
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+        }
+
+        .bar-label {
+            display: flex;
+            justify-content: space-between;
+            font-size: 0.9rem;
+        }
+
+        .bar-track {
+            height: 12px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 6px;
+            overflow: hidden;
+        }
+
+        .bar-fill {
+            height: 100%;
+            border-radius: 6px;
+            transition: width 1s ease;
+        }
+
+        .bar-fill.danger { background: linear-gradient(90deg, #FF6B35, #FF8F6B); }
+        .bar-fill.warning { background: linear-gradient(90deg, #FFD93D, #FFE66D); }
+        .bar-fill.success { background: linear-gradient(90deg, var(--primary), #00FFB8); }
+        .bar-fill.info { background: linear-gradient(90deg, var(--accent-2), #A78BFA); }
+
+        /* Features Section */
+        .features-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 2rem;
+        }
+
+        @media (max-width: 900px) {
+            .features-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .feature-card {
+            position: relative;
+            padding: 2.5rem;
+        }
+
+        .feature-number {
+            position: absolute;
+            top: 1.5rem;
+            right: 1.5rem;
+            font-family: 'Space Grotesk', sans-serif;
+            font-size: 4rem;
+            font-weight: 700;
+            color: rgba(0, 217, 165, 0.1);
+            line-height: 1;
+        }
+
+        .feature-icon {
+            width: 70px;
+            height: 70px;
+            background: linear-gradient(135deg, var(--primary), var(--accent-2));
+            border-radius: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 2rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .feature-title {
+            font-size: 1.4rem;
+            font-weight: 600;
+            margin-bottom: 1rem;
+        }
+
+        .feature-desc {
+            color: var(--text-muted);
+            margin-bottom: 1.5rem;
+        }
+
+        .feature-list {
+            list-style: none;
+        }
+
+        .feature-list li {
+            padding: 0.5rem 0;
+            padding-left: 1.5rem;
+            position: relative;
+            color: var(--text-muted);
+            font-size: 0.9rem;
+        }
+
+        .feature-list li::before {
+            content: '';
+            position: absolute;
+            left: 0;
+            top: 50%;
+            transform: translateY(-50%);
+            width: 8px;
+            height: 8px;
+            background: var(--primary);
+            border-radius: 50%;
+        }
+
+        /* UI Preview Section */
+        .ui-preview {
+            background: var(--bg-card);
+            border-radius: 24px;
+            padding: 3rem;
+            margin: 3rem 0;
+            border: 1px solid rgba(255, 255, 255, 0.05);
+        }
+
+        .ui-tabs {
+            display: flex;
+            gap: 1rem;
+            margin-bottom: 2rem;
+            flex-wrap: wrap;
+        }
+
+        .ui-tab {
+            padding: 0.8rem 1.5rem;
+            background: rgba(255, 255, 255, 0.05);
+            border: none;
+            border-radius: 12px;
+            color: var(--text-muted);
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-size: 0.9rem;
+        }
+
+        .ui-tab.active, .ui-tab:hover {
+            background: var(--primary);
+            color: var(--secondary);
+        }
+
+        .ui-mockup {
+            background: #0D0D15;
+            border-radius: 16px;
+            padding: 2rem;
+            font-family: 'Courier New', monospace;
+            font-size: 0.75rem;
+            line-height: 1.6;
+            overflow-x: auto;
+            border: 1px solid rgba(0, 217, 165, 0.2);
+        }
+
+        .ui-mockup pre {
+            color: var(--text-muted);
+            white-space: pre;
+            margin: 0;
+        }
+
+        .ui-content {
+            display: none;
+        }
+
+        .ui-content.active {
+            display: block;
+        }
+
+        /* Algorithm Section */
+        .algorithm-box {
+            background: linear-gradient(145deg, rgba(0, 217, 165, 0.05), rgba(132, 94, 194, 0.05));
+            border-radius: 24px;
+            padding: 3rem;
+            margin: 2rem 0;
+            border: 1px solid rgba(0, 217, 165, 0.2);
+        }
+
+        .formula {
+            background: rgba(0, 0, 0, 0.4);
+            border-radius: 12px;
+            padding: 1.5rem 2rem;
+            font-family: 'Space Grotesk', monospace;
+            font-size: 1.1rem;
+            color: var(--primary);
+            text-align: center;
+            margin: 1.5rem 0;
+            overflow-x: auto;
+        }
+
+        /* Expected Effects */
+        .effects-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 1.5rem;
+            margin: 3rem 0;
+        }
+
+        .effect-card {
+            background: var(--bg-card);
+            border-radius: 20px;
+            padding: 2rem;
+            text-align: center;
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            transition: all 0.3s ease;
+        }
+
+        .effect-card:hover {
+            border-color: var(--primary);
+            box-shadow: 0 0 30px rgba(0, 217, 165, 0.2);
+        }
+
+        .effect-icon {
+            font-size: 2.5rem;
+            margin-bottom: 1rem;
+        }
+
+        .effect-value {
+            font-family: 'Space Grotesk', sans-serif;
+            font-size: 2.5rem;
+            font-weight: 700;
+            color: var(--primary);
+            margin-bottom: 0.5rem;
+        }
+
+        .effect-label {
+            font-size: 1rem;
+            font-weight: 500;
+            margin-bottom: 0.5rem;
+        }
+
+        .effect-desc {
+            font-size: 0.85rem;
+            color: var(--text-muted);
+        }
+
+        /* Roadmap */
+        .roadmap {
+            position: relative;
+            padding: 2rem 0;
+        }
+
+        .roadmap::before {
+            content: '';
+            position: absolute;
+            left: 50%;
+            top: 0;
+            bottom: 0;
+            width: 2px;
+            background: linear-gradient(to bottom, var(--primary), var(--accent-2));
+            transform: translateX(-50%);
+        }
+
+        @media (max-width: 768px) {
+            .roadmap::before {
+                left: 20px;
+            }
+        }
+
+        .roadmap-item {
+            display: flex;
+            justify-content: center;
+            gap: 4rem;
+            margin: 3rem 0;
+            position: relative;
+        }
+
+        @media (max-width: 768px) {
+            .roadmap-item {
+                flex-direction: column;
+                padding-left: 60px;
+                gap: 1rem;
+            }
+        }
+
+        .roadmap-content {
+            flex: 1;
+            max-width: 400px;
+        }
+
+        .roadmap-content.left {
+            text-align: right;
+        }
+
+        @media (max-width: 768px) {
+            .roadmap-content.left {
+                text-align: left;
+            }
+        }
+
+        .roadmap-dot {
+            width: 20px;
+            height: 20px;
+            background: var(--primary);
+            border-radius: 50%;
+            position: absolute;
+            left: 50%;
+            top: 50%;
+            transform: translate(-50%, -50%);
+            box-shadow: 0 0 20px var(--primary);
+        }
+
+        @media (max-width: 768px) {
+            .roadmap-dot {
+                left: 20px;
+            }
+        }
+
+        .roadmap-phase {
+            display: inline-block;
+            padding: 0.3rem 1rem;
+            background: rgba(0, 217, 165, 0.2);
+            border-radius: 20px;
+            font-size: 0.8rem;
+            color: var(--primary);
+            margin-bottom: 0.5rem;
+        }
+
+        .roadmap-title {
+            font-size: 1.3rem;
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+        }
+
+        .roadmap-desc {
+            color: var(--text-muted);
+            font-size: 0.9rem;
+        }
+
+        /* Comparison Table */
+        .table-wrapper {
+            overflow-x: auto;
+            margin: 2rem 0;
+        }
+
+        .comparison-table {
+            width: 100%;
+            border-collapse: collapse;
+            background: var(--bg-card);
+            border-radius: 16px;
+            overflow: hidden;
+        }
+
+        .comparison-table th,
+        .comparison-table td {
+            padding: 1.2rem 1.5rem;
+            text-align: left;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+        }
+
+        .comparison-table th {
+            background: rgba(0, 217, 165, 0.1);
+            font-weight: 600;
+            color: var(--primary);
+        }
+
+        .comparison-table tr:hover {
+            background: rgba(255, 255, 255, 0.02);
+        }
+
+        .comparison-table td:first-child {
+            font-weight: 500;
+        }
+
+        .highlight-cell {
+            background: rgba(0, 217, 165, 0.1) !important;
+            color: var(--primary);
+            font-weight: 600;
+        }
+
+        /* Architecture Diagram */
+        .architecture {
+            background: var(--bg-card);
+            border-radius: 24px;
+            padding: 3rem;
+            margin: 3rem 0;
+        }
+
+        .arch-layer {
+            background: rgba(255, 255, 255, 0.03);
+            border-radius: 16px;
+            padding: 1.5rem;
+            margin: 1rem 0;
+            border: 1px solid rgba(255, 255, 255, 0.05);
+        }
+
+        .arch-layer-title {
+            font-size: 0.85rem;
+            color: var(--primary);
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            margin-bottom: 1rem;
+        }
+
+        .arch-items {
+            display: flex;
+            gap: 1rem;
+            flex-wrap: wrap;
+            justify-content: center;
+        }
+
+        .arch-item {
+            background: var(--bg-dark);
+            padding: 1rem 1.5rem;
+            border-radius: 12px;
+            font-size: 0.9rem;
+            border: 1px solid rgba(0, 217, 165, 0.2);
+        }
+
+        .arch-arrow {
+            text-align: center;
+            font-size: 1.5rem;
+            color: var(--primary);
+            margin: 0.5rem 0;
+        }
+
+        /* References */
+        .references {
+            background: rgba(255, 255, 255, 0.02);
+            border-radius: 16px;
+            padding: 2rem;
+            margin-top: 3rem;
+        }
+
+        .references h3 {
+            font-size: 1.2rem;
+            margin-bottom: 1rem;
+            color: var(--primary);
+        }
+
+        .references ol {
+            padding-left: 1.5rem;
+            color: var(--text-muted);
+            font-size: 0.9rem;
+        }
+
+        .references li {
+            margin: 0.5rem 0;
+        }
+
+        /* Footer */
+        footer {
+            text-align: center;
+            padding: 4rem 2rem;
+            background: rgba(0, 0, 0, 0.3);
+            margin-top: 4rem;
+        }
+
+        .footer-logo {
+            font-family: 'Space Grotesk', sans-serif;
+            font-size: 2rem;
+            font-weight: 700;
+            color: var(--primary);
+            margin-bottom: 1rem;
+        }
+
+        .footer-text {
+            color: var(--text-muted);
+            font-size: 0.9rem;
+            margin-bottom: 2rem;
+        }
+
+        .footer-badge {
+            display: inline-block;
+            padding: 0.5rem 1.5rem;
+            background: rgba(0, 217, 165, 0.1);
+            border: 1px solid var(--primary);
+            border-radius: 30px;
+            font-size: 0.85rem;
+            color: var(--primary);
+        }
+
+        /* Scroll Indicator */
+        .scroll-indicator {
+            position: fixed;
+            bottom: 2rem;
+            right: 2rem;
+            width: 50px;
+            height: 50px;
+            background: var(--primary);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            opacity: 0;
+            transition: all 0.3s ease;
+            z-index: 1000;
+        }
+
+        .scroll-indicator.visible {
+            opacity: 1;
+        }
+
+        .scroll-indicator:hover {
+            transform: scale(1.1);
+            box-shadow: var(--glow);
+        }
+
+        /* Utility Classes */
+        .text-gradient {
+            background: linear-gradient(135deg, var(--primary), var(--accent-2));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .mt-4 { margin-top: 2rem; }
+        .mb-4 { margin-bottom: 2rem; }
+        .text-center { text-align: center; }
+
+        /* Flow Diagram */
+        .flow-container {
+            background: var(--bg-card);
+            border-radius: 24px;
+            padding: 3rem;
+            margin: 2rem 0;
+        }
+
+        .flow-steps {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            flex-wrap: wrap;
+            gap: 1rem;
+            position: relative;
+        }
+
+        .flow-step {
+            flex: 1;
+            min-width: 150px;
+            text-align: center;
+            position: relative;
+        }
+
+        .flow-step::after {
+            content: '';
+            position: absolute;
+            top: 25px;
+            right: -50%;
+            width: 100%;
+            height: 2px;
+            background: linear-gradient(90deg, var(--primary), transparent);
+        }
+
+        .flow-step:last-child::after {
+            display: none;
+        }
+
+        @media (max-width: 768px) {
+            .flow-step::after {
+                display: none;
+            }
+        }
+
+        .flow-icon {
+            width: 50px;
+            height: 50px;
+            background: linear-gradient(135deg, var(--primary), var(--accent-2));
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 1rem;
+            font-size: 1.2rem;
+        }
+
+        .flow-title {
+            font-size: 0.9rem;
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+        }
+
+        .flow-desc {
+            font-size: 0.8rem;
+            color: var(--text-muted);
+        }
+
+        /* Animate on scroll - PDF 변환 시에도 내용이 보이도록 기본값 opacity: 1 */
+        .fade-in {
+            opacity: 1;
+            transform: translateY(0);
+            transition: all 0.8s ease;
+        }
+
+        .fade-in.visible {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        /* 인쇄/PDF용 스타일 */
+        @media print {
+            .fade-in {
+                opacity: 1 !important;
+                transform: none !important;
+            }
+            nav {
+                position: relative !important;
+            }
+            .bg-animation {
+                display: none !important;
+            }
+        }
+
+        /* ========== Mock Browser UI Styles ========== */
+        .mock-browser {
+            background: #1a1a2e;
+            border-radius: 16px;
+            overflow: hidden;
+            box-shadow: 0 25px 50px rgba(0,0,0,0.5);
+            border: 1px solid rgba(255,255,255,0.1);
+        }
+
+        .mock-browser-header {
+            background: #0d0d15;
+            padding: 12px 16px;
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            border-bottom: 1px solid rgba(255,255,255,0.1);
+        }
+
+        .mock-dots {
+            display: flex;
+            gap: 8px;
+        }
+
+        .mock-dot {
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+        }
+
+        .mock-dot.red { background: #ff5f57; }
+        .mock-dot.yellow { background: #febc2e; }
+        .mock-dot.green { background: #28c840; }
+
+        .mock-url {
+            flex: 1;
+            background: rgba(255,255,255,0.1);
+            padding: 6px 16px;
+            border-radius: 6px;
+            font-size: 0.75rem;
+            color: var(--text-muted);
+            font-family: monospace;
+        }
+
+        .mock-browser-body {
+            background: linear-gradient(180deg, #12121f 0%, #1a1a2e 100%);
+            min-height: 500px;
+        }
+
+        /* App Header */
+        .app-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 12px 20px;
+            background: rgba(0,0,0,0.3);
+            border-bottom: 1px solid rgba(0, 217, 165, 0.2);
+        }
+
+        .app-logo {
+            font-family: 'Space Grotesk', sans-serif;
+            font-size: 1.2rem;
+            font-weight: 700;
+            color: var(--primary);
+        }
+
+        .app-nav {
+            display: flex;
+            gap: 8px;
+        }
+
+        .app-nav-item {
+            padding: 6px 12px;
+            font-size: 0.75rem;
+            color: var(--text-muted);
+            border-radius: 6px;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .app-nav-item:hover { color: var(--text-light); }
+        .app-nav-item.active {
+            background: var(--primary);
+            color: var(--secondary);
+        }
+
+        .app-user {
+            font-size: 0.75rem;
+            color: var(--text-muted);
+            padding: 6px 12px;
+            background: rgba(255,255,255,0.05);
+            border-radius: 6px;
+        }
+
+        .app-content {
+            padding: 20px;
+        }
+
+        .page-title {
+            font-size: 1.1rem;
+            font-weight: 600;
+            margin-bottom: 16px;
+            color: var(--text-light);
+        }
+
+        /* Dashboard Grid */
+        .dashboard-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 16px;
+        }
+
+        @media (max-width: 800px) {
+            .dashboard-grid { grid-template-columns: 1fr; }
+        }
+
+        .dash-card {
+            background: rgba(255,255,255,0.03);
+            border-radius: 12px;
+            padding: 16px;
+            border: 1px solid rgba(255,255,255,0.05);
+        }
+
+        .dash-card-title {
+            font-size: 0.8rem;
+            font-weight: 600;
+            margin-bottom: 12px;
+            color: var(--text-light);
+        }
+
+        /* Stats Card */
+        .stats-row {
+            display: flex;
+            gap: 12px;
+        }
+
+        .stat-box {
+            flex: 1;
+            text-align: center;
+            padding: 12px;
+            background: rgba(255,255,255,0.03);
+            border-radius: 8px;
+        }
+
+        .stat-box.highlight-box { background: rgba(0, 217, 165, 0.15); }
+        .stat-box.warning-box { background: rgba(255, 107, 53, 0.15); }
+
+        .stat-big-number {
+            font-family: 'Space Grotesk', sans-serif;
+            font-size: 1.8rem;
+            font-weight: 700;
+            color: var(--text-light);
+        }
+
+        .highlight-box .stat-big-number { color: var(--primary); }
+        .warning-box .stat-big-number { color: var(--accent); }
+
+        .stat-small-label {
+            font-size: 0.65rem;
+            color: var(--text-muted);
+            margin-top: 4px;
+        }
+
+        /* Priority List */
+        .priority-list {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .priority-item {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 0.75rem;
+        }
+
+        .priority-rank {
+            width: 20px;
+            height: 20px;
+            background: var(--primary);
+            color: var(--secondary);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.65rem;
+            font-weight: 700;
+        }
+
+        .priority-name {
+            width: 70px;
+            color: var(--text-light);
+        }
+
+        .priority-bar-wrap {
+            flex: 1;
+            height: 8px;
+            background: rgba(255,255,255,0.1);
+            border-radius: 4px;
+            overflow: hidden;
+        }
+
+        .priority-bar {
+            height: 100%;
+            background: linear-gradient(90deg, var(--primary), var(--accent-2));
+            border-radius: 4px;
+        }
+
+        .priority-score {
+            width: 40px;
+            text-align: right;
+            color: var(--primary);
+            font-weight: 600;
+        }
+
+        .view-all-btn {
+            margin-top: 12px;
+            width: 100%;
+            padding: 8px;
+            background: rgba(0, 217, 165, 0.1);
+            border: 1px solid var(--primary);
+            color: var(--primary);
+            border-radius: 6px;
+            font-size: 0.7rem;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .view-all-btn:hover {
+            background: var(--primary);
+            color: var(--secondary);
+        }
+
+        /* Map Card */
+        .map-card {
+            grid-column: span 2;
+        }
+
+        @media (max-width: 800px) {
+            .map-card { grid-column: span 1; }
+        }
+
+        .mock-map {
+            height: 180px;
+            background: linear-gradient(135deg, #0a2e1f 0%, #1a3a2e 50%, #0f2318 100%);
+            border-radius: 8px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .mock-map::before {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background:
+                repeating-linear-gradient(0deg, transparent, transparent 20px, rgba(0,217,165,0.03) 20px, rgba(0,217,165,0.03) 21px),
+                repeating-linear-gradient(90deg, transparent, transparent 20px, rgba(0,217,165,0.03) 20px, rgba(0,217,165,0.03) 21px);
+        }
+
+        .map-marker {
+            position: absolute;
+            width: 16px;
+            height: 16px;
+            border-radius: 50%;
+            cursor: pointer;
+            transition: transform 0.2s;
+            z-index: 1;
+        }
+
+        .map-marker:hover {
+            transform: scale(1.5);
+            z-index: 10;
+        }
+
+        .map-marker.red { background: #ff5f57; box-shadow: 0 0 10px #ff5f57; }
+        .map-marker.yellow { background: #febc2e; box-shadow: 0 0 10px #febc2e; }
+        .map-marker.green { background: #28c840; box-shadow: 0 0 10px #28c840; }
+
+        .marker-tooltip {
+            position: absolute;
+            bottom: 100%;
+            left: 50%;
+            transform: translateX(-50%);
+            background: var(--bg-card);
+            padding: 4px 8px;
+            border-radius: 4px;
+            font-size: 0.6rem;
+            white-space: nowrap;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.2s;
+            border: 1px solid rgba(255,255,255,0.1);
+        }
+
+        .map-marker:hover .marker-tooltip {
+            opacity: 1;
+        }
+
+        .map-legend {
+            position: absolute;
+            bottom: 8px;
+            left: 8px;
+            display: flex;
+            gap: 12px;
+            font-size: 0.6rem;
+            color: var(--text-muted);
+        }
+
+        .legend-item {
+            display: flex;
+            align-items: center;
+            gap: 4px;
+        }
+
+        .legend-dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+        }
+
+        .legend-dot.red { background: #ff5f57; }
+        .legend-dot.yellow { background: #febc2e; }
+        .legend-dot.green { background: #28c840; }
+
+        /* Alerts */
+        .alert-list {
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+        }
+
+        .alert-item {
+            padding: 8px 12px;
+            background: rgba(255,255,255,0.03);
+            border-radius: 6px;
+            font-size: 0.7rem;
+            color: var(--text-muted);
+            border-left: 3px solid transparent;
+        }
+
+        .alert-item.new {
+            border-left-color: var(--primary);
+            color: var(--text-light);
+        }
+
+        /* Filter Bar */
+        .filter-bar {
+            display: flex;
+            gap: 12px;
+            align-items: flex-end;
+            flex-wrap: wrap;
+            padding: 12px;
+            background: rgba(255,255,255,0.03);
+            border-radius: 8px;
+            margin-bottom: 16px;
+        }
+
+        .filter-group {
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+        }
+
+        .filter-group label {
+            font-size: 0.65rem;
+            color: var(--text-muted);
+        }
+
+        .filter-select {
+            padding: 6px 10px;
+            background: rgba(255,255,255,0.05);
+            border: 1px solid rgba(255,255,255,0.1);
+            border-radius: 6px;
+            color: var(--text-light);
+            font-size: 0.7rem;
+        }
+
+        .search-btn {
+            padding: 6px 16px;
+            background: var(--primary);
+            border: none;
+            border-radius: 6px;
+            color: var(--secondary);
+            font-size: 0.7rem;
+            font-weight: 600;
+            cursor: pointer;
+        }
+
+        /* Data Table */
+        .data-table {
+            background: rgba(255,255,255,0.02);
+            border-radius: 8px;
+            overflow: hidden;
+            margin-bottom: 16px;
+        }
+
+        .table-header, .table-row {
+            display: grid;
+            grid-template-columns: 50px 1fr 80px 60px 60px 120px;
+            gap: 8px;
+            padding: 10px 12px;
+            font-size: 0.7rem;
+            align-items: center;
+        }
+
+        .table-header {
+            background: rgba(0, 217, 165, 0.1);
+            color: var(--primary);
+            font-weight: 600;
+        }
+
+        .table-row {
+            border-bottom: 1px solid rgba(255,255,255,0.05);
+            color: var(--text-muted);
+            cursor: pointer;
+            transition: background 0.2s;
+        }
+
+        .table-row:hover {
+            background: rgba(255,255,255,0.03);
+        }
+
+        .table-row.selected {
+            background: rgba(0, 217, 165, 0.1);
+        }
+
+        .rank-badge {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 22px;
+            height: 22px;
+            background: var(--primary);
+            color: var(--secondary);
+            border-radius: 50%;
+            font-weight: 700;
+        }
+
+        .type-tag {
+            display: inline-block;
+            padding: 2px 8px;
+            background: rgba(0, 217, 165, 0.2);
+            color: var(--primary);
+            border-radius: 4px;
+            font-size: 0.65rem;
+        }
+
+        .type-tag.orange {
+            background: rgba(255, 107, 53, 0.2);
+            color: var(--accent);
+        }
+
+        .type-tag.blue {
+            background: rgba(132, 94, 194, 0.2);
+            color: var(--accent-2);
+        }
+
+        .col-score {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .score-bar-mini {
+            flex: 1;
+            height: 6px;
+            background: rgba(255,255,255,0.1);
+            border-radius: 3px;
+            overflow: hidden;
+        }
+
+        .score-bar-mini div {
+            height: 100%;
+            background: linear-gradient(90deg, var(--primary), var(--accent-2));
+            border-radius: 3px;
+        }
+
+        /* Detail Panel */
+        .detail-panel {
+            background: rgba(255,255,255,0.03);
+            border-radius: 12px;
+            padding: 16px;
+            border: 1px solid rgba(0, 217, 165, 0.2);
+        }
+
+        .detail-header {
+            font-size: 0.8rem;
+            color: var(--text-muted);
+            margin-bottom: 12px;
+            padding-bottom: 8px;
+            border-bottom: 1px solid rgba(255,255,255,0.1);
+        }
+
+        .detail-content {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 16px;
+        }
+
+        @media (max-width: 600px) {
+            .detail-content { grid-template-columns: 1fr; }
+        }
+
+        .chart-title {
+            font-size: 0.75rem;
+            font-weight: 600;
+            margin-bottom: 10px;
+            color: var(--text-light);
+        }
+
+        .radar-bars {
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+        }
+
+        .radar-item {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 0.65rem;
+        }
+
+        .radar-item > span:first-child {
+            width: 45px;
+            color: var(--text-muted);
+        }
+
+        .radar-item > span:last-child {
+            width: 25px;
+            text-align: right;
+            color: var(--primary);
+            font-weight: 600;
+        }
+
+        .radar-bar {
+            flex: 1;
+            height: 8px;
+            background: rgba(255,255,255,0.1);
+            border-radius: 4px;
+            overflow: hidden;
+        }
+
+        .radar-bar div {
+            height: 100%;
+            background: linear-gradient(90deg, var(--primary), var(--accent-2));
+            border-radius: 4px;
+        }
+
+        .info-list {
+            list-style: none;
+            padding: 0;
+        }
+
+        .info-list li {
+            display: flex;
+            justify-content: space-between;
+            padding: 6px 0;
+            border-bottom: 1px solid rgba(255,255,255,0.05);
+            font-size: 0.7rem;
+        }
+
+        .info-label { color: var(--text-muted); }
+        .info-value { color: var(--text-light); }
+
+        .grade-badge {
+            display: inline-block;
+            padding: 2px 8px;
+            background: rgba(255, 107, 53, 0.2);
+            color: var(--accent);
+            border-radius: 4px;
+            font-size: 0.65rem;
+        }
+
+        .detail-actions {
+            display: flex;
+            gap: 8px;
+            margin-top: 16px;
+            padding-top: 12px;
+            border-top: 1px solid rgba(255,255,255,0.1);
+        }
+
+        .action-btn {
+            padding: 8px 14px;
+            background: rgba(255,255,255,0.05);
+            border: 1px solid rgba(255,255,255,0.1);
+            border-radius: 6px;
+            color: var(--text-light);
+            font-size: 0.7rem;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .action-btn:hover {
+            background: rgba(255,255,255,0.1);
+        }
+
+        .action-btn.primary {
+            background: var(--primary);
+            border-color: var(--primary);
+            color: var(--secondary);
+        }
+
+        /* Benchmark Cards */
+        .match-info-box {
+            background: rgba(255,255,255,0.03);
+            border-radius: 8px;
+            padding: 12px 16px;
+            margin-bottom: 16px;
+            font-size: 0.75rem;
+        }
+
+        .match-target { color: var(--text-light); margin-bottom: 4px; }
+        .match-criteria { color: var(--text-muted); }
+
+        .bench-title {
+            font-size: 0.85rem;
+            font-weight: 600;
+            margin-bottom: 12px;
+            color: var(--text-light);
+        }
+
+        .bench-cards {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 12px;
+            margin-bottom: 16px;
+        }
+
+        @media (max-width: 700px) {
+            .bench-cards { grid-template-columns: 1fr; }
+        }
+
+        .bench-card {
+            background: rgba(255,255,255,0.03);
+            border-radius: 12px;
+            padding: 16px;
+            border: 1px solid rgba(255,255,255,0.05);
+            transition: all 0.3s;
+        }
+
+        .bench-card:hover {
+            border-color: rgba(0, 217, 165, 0.3);
+        }
+
+        .bench-card.best {
+            border-color: var(--primary);
+            box-shadow: 0 0 20px rgba(0, 217, 165, 0.15);
+        }
+
+        .bench-badge {
+            display: inline-block;
+            padding: 4px 10px;
+            background: rgba(0, 217, 165, 0.2);
+            color: var(--primary);
+            border-radius: 12px;
+            font-size: 0.65rem;
+            font-weight: 600;
+            margin-bottom: 8px;
+        }
+
+        .bench-name {
+            font-size: 0.85rem;
+            font-weight: 600;
+            color: var(--text-light);
+            margin-bottom: 12px;
+        }
+
+        .bench-details {
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+            margin-bottom: 12px;
+        }
+
+        .bench-row {
+            display: flex;
+            justify-content: space-between;
+            font-size: 0.7rem;
+            padding: 4px 0;
+            border-bottom: 1px solid rgba(255,255,255,0.05);
+        }
+
+        .bench-row span:first-child { color: var(--text-muted); }
+        .bench-row span:last-child { color: var(--text-light); }
+
+        .bench-row.highlight span:last-child {
+            color: var(--primary);
+            font-weight: 600;
+        }
+
+        .bench-btn {
+            width: 100%;
+            padding: 8px;
+            background: rgba(0, 217, 165, 0.1);
+            border: 1px solid rgba(0, 217, 165, 0.3);
+            border-radius: 6px;
+            color: var(--primary);
+            font-size: 0.7rem;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .bench-btn:hover {
+            background: var(--primary);
+            color: var(--secondary);
+        }
+
+        .review-box {
+            background: rgba(255,255,255,0.03);
+            border-radius: 12px;
+            padding: 16px;
+            border-left: 4px solid var(--primary);
+        }
+
+        .review-header {
+            font-size: 0.8rem;
+            font-weight: 600;
+            color: var(--text-light);
+            margin-bottom: 8px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .review-content {
+            font-size: 0.75rem;
+            color: var(--text-muted);
+            line-height: 1.6;
+        }
+
+        /* Simulation */
+        .sim-options {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 16px;
+            margin-bottom: 16px;
+        }
+
+        @media (max-width: 600px) {
+            .sim-options { grid-template-columns: 1fr; }
+        }
+
+        .sim-option-group {
+            background: rgba(255,255,255,0.03);
+            border-radius: 8px;
+            padding: 12px;
+        }
+
+        .sim-group-title {
+            font-size: 0.75rem;
+            font-weight: 600;
+            color: var(--text-light);
+            margin-bottom: 10px;
+        }
+
+        .sim-checkbox {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 6px 0;
+            font-size: 0.7rem;
+            color: var(--text-muted);
+            cursor: pointer;
+        }
+
+        .sim-checkbox input { display: none; }
+
+        .sim-checkbox .checkmark {
+            width: 16px;
+            height: 16px;
+            border: 2px solid rgba(255,255,255,0.2);
+            border-radius: 4px;
+            transition: all 0.2s;
+        }
+
+        .sim-checkbox.checked .checkmark {
+            background: var(--primary);
+            border-color: var(--primary);
+        }
+
+        .sim-checkbox.checked .checkmark::after {
+            content: '✓';
+            color: var(--secondary);
+            font-size: 0.6rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .inline-select {
+            margin-left: auto;
+            padding: 2px 6px;
+            background: rgba(255,255,255,0.05);
+            border: 1px solid rgba(255,255,255,0.1);
+            border-radius: 4px;
+            color: var(--text-light);
+            font-size: 0.6rem;
+        }
+
+        .sim-results {
+            background: rgba(255,255,255,0.03);
+            border-radius: 12px;
+            padding: 16px;
+            border: 1px solid rgba(0, 217, 165, 0.2);
+        }
+
+        .sim-result-header {
+            font-size: 0.85rem;
+            font-weight: 600;
+            color: var(--text-light);
+            margin-bottom: 16px;
+        }
+
+        .energy-comparison {
+            margin-bottom: 16px;
+        }
+
+        .energy-bar-group {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 8px;
+        }
+
+        .energy-label {
+            width: 80px;
+            font-size: 0.7rem;
+            color: var(--text-muted);
+        }
+
+        .energy-bar-wrap {
+            flex: 1;
+            height: 20px;
+            background: rgba(255,255,255,0.1);
+            border-radius: 4px;
+            overflow: hidden;
+        }
+
+        .energy-bar {
+            height: 100%;
+            border-radius: 4px;
+            transition: width 0.5s ease;
+        }
+
+        .energy-bar.current {
+            background: linear-gradient(90deg, #ff6b35, #ff8f6b);
+        }
+
+        .energy-bar.after {
+            background: linear-gradient(90deg, var(--primary), #00FFB8);
+        }
+
+        .energy-value {
+            width: 100px;
+            font-size: 0.75rem;
+            color: var(--text-light);
+            text-align: right;
+        }
+
+        .energy-saving {
+            text-align: center;
+            font-size: 0.8rem;
+            color: var(--primary);
+            padding: 8px;
+            background: rgba(0, 217, 165, 0.1);
+            border-radius: 6px;
+        }
+
+        .result-cards {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 12px;
+            margin: 16px 0;
+        }
+
+        @media (max-width: 600px) {
+            .result-cards { grid-template-columns: repeat(2, 1fr); }
+        }
+
+        .result-card {
+            text-align: center;
+            padding: 16px 8px;
+            background: rgba(255,255,255,0.03);
+            border-radius: 12px;
+        }
+
+        .result-icon {
+            font-size: 1.5rem;
+            margin-bottom: 8px;
+        }
+
+        .result-value {
+            font-family: 'Space Grotesk', sans-serif;
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: var(--primary);
+        }
+
+        .result-unit {
+            font-size: 0.65rem;
+            color: var(--text-muted);
+        }
+
+        .result-label {
+            font-size: 0.7rem;
+            color: var(--text-muted);
+            margin-top: 4px;
+        }
+
+        .cost-summary {
+            background: rgba(0,0,0,0.2);
+            border-radius: 8px;
+            padding: 12px;
+            margin-bottom: 16px;
+        }
+
+        .cost-row {
+            display: flex;
+            justify-content: space-between;
+            padding: 6px 0;
+            font-size: 0.75rem;
+            color: var(--text-muted);
+        }
+
+        .cost-row.highlight {
+            color: var(--text-light);
+            font-weight: 600;
+        }
+
+        .cost-value {
+            color: var(--text-light);
+        }
+
+        .cost-value.green {
+            color: var(--primary);
+            font-weight: 700;
+        }
+
+        .sim-actions {
+            display: flex;
+            gap: 8px;
+            justify-content: center;
+        }
+
+        .sim-btn {
+            padding: 10px 20px;
+            background: rgba(255,255,255,0.05);
+            border: 1px solid rgba(255,255,255,0.1);
+            border-radius: 8px;
+            color: var(--text-light);
+            font-size: 0.75rem;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .sim-btn:hover {
+            background: rgba(255,255,255,0.1);
+        }
+
+        .sim-btn.primary {
+            background: var(--primary);
+            border-color: var(--primary);
+            color: var(--secondary);
+            font-weight: 600;
+        }
+
+        /* Checklist */
+        .checklist-progress {
+            background: rgba(255,255,255,0.03);
+            border-radius: 12px;
+            padding: 16px;
+            margin-bottom: 16px;
+        }
+
+        .progress-info {
+            display: flex;
+            justify-content: space-between;
+            font-size: 0.75rem;
+            color: var(--text-muted);
+            margin-bottom: 8px;
+        }
+
+        .progress-percent {
+            color: var(--primary);
+            font-weight: 700;
+            font-size: 1rem;
+        }
+
+        .progress-bar-wrap {
+            height: 12px;
+            background: rgba(255,255,255,0.1);
+            border-radius: 6px;
+            overflow: hidden;
+        }
+
+        .progress-bar-fill {
+            height: 100%;
+            background: linear-gradient(90deg, var(--primary), var(--accent-2));
+            border-radius: 6px;
+            transition: width 0.5s ease;
+        }
+
+        .progress-count {
+            text-align: right;
+            font-size: 0.7rem;
+            color: var(--text-muted);
+            margin-top: 6px;
+        }
+
+        .checklist-section {
+            background: rgba(255,255,255,0.03);
+            border-radius: 12px;
+            padding: 16px;
+            margin-bottom: 12px;
+            border: 1px solid rgba(255,255,255,0.05);
+        }
+
+        .checklist-section.completed {
+            border-color: rgba(0, 217, 165, 0.3);
+        }
+
+        .checklist-section.in-progress {
+            border-color: rgba(254, 188, 46, 0.3);
+        }
+
+        .section-header-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 12px;
+            padding-bottom: 8px;
+            border-bottom: 1px solid rgba(255,255,255,0.1);
+        }
+
+        .section-title {
+            font-size: 0.8rem;
+            font-weight: 600;
+            color: var(--text-light);
+        }
+
+        .section-status {
+            font-size: 0.65rem;
+            padding: 4px 10px;
+            border-radius: 12px;
+        }
+
+        .section-status.done {
+            background: rgba(0, 217, 165, 0.2);
+            color: var(--primary);
+        }
+
+        .section-status.progress {
+            background: rgba(254, 188, 46, 0.2);
+            color: #febc2e;
+        }
+
+        .checklist-items {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .check-item {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 8px;
+            background: rgba(255,255,255,0.02);
+            border-radius: 6px;
+            font-size: 0.7rem;
+        }
+
+        .check-box {
+            width: 18px;
+            height: 18px;
+            border: 2px solid rgba(255,255,255,0.2);
+            border-radius: 4px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .check-box.checked {
+            background: var(--primary);
+            border-color: var(--primary);
+        }
+
+        .check-box.checked::after {
+            content: '✓';
+            color: var(--secondary);
+            font-size: 0.6rem;
+        }
+
+        .check-label {
+            width: 120px;
+            color: var(--text-muted);
+        }
+
+        .check-value {
+            color: var(--text-light);
+        }
+
+        .upload-btn {
+            padding: 4px 10px;
+            background: rgba(0, 217, 165, 0.1);
+            border: 1px dashed var(--primary);
+            border-radius: 4px;
+            color: var(--primary);
+            font-size: 0.65rem;
+            cursor: pointer;
+        }
+
+        .warning-tag {
+            color: var(--accent);
+            font-size: 0.65rem;
+            margin-left: auto;
+        }
+
+        .size-input {
+            width: 70px;
+            padding: 4px 8px;
+            background: rgba(255,255,255,0.05);
+            border: 1px solid rgba(255,255,255,0.1);
+            border-radius: 4px;
+            color: var(--text-light);
+            font-size: 0.65rem;
+        }
+
+        .help-box {
+            background: rgba(0, 217, 165, 0.05);
+            border: 1px solid rgba(0, 217, 165, 0.2);
+            border-radius: 12px;
+            padding: 16px;
+            margin-bottom: 16px;
+        }
+
+        .help-title {
+            font-size: 0.8rem;
+            font-weight: 600;
+            color: var(--primary);
+            margin-bottom: 8px;
+        }
+
+        .help-list {
+            list-style: none;
+            padding: 0;
+        }
+
+        .help-list li {
+            font-size: 0.7rem;
+            color: var(--text-muted);
+            padding: 4px 0;
+            padding-left: 16px;
+            position: relative;
+        }
+
+        .help-list li::before {
+            content: '•';
+            position: absolute;
+            left: 0;
+            color: var(--primary);
+        }
+
+        .help-list a {
+            color: var(--primary);
+            text-decoration: underline;
+        }
+
+        .checklist-actions {
+            display: flex;
+            gap: 8px;
+            justify-content: flex-end;
+        }
+
+        .check-btn {
+            padding: 10px 16px;
+            background: rgba(255,255,255,0.05);
+            border: 1px solid rgba(255,255,255,0.1);
+            border-radius: 8px;
+            color: var(--text-light);
+            font-size: 0.75rem;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .check-btn:hover {
+            background: rgba(255,255,255,0.1);
+        }
+
+        .check-btn.primary {
+            background: var(--primary);
+            border-color: var(--primary);
+            color: var(--secondary);
+            font-weight: 600;
+        }
+    </style>
+</head>
+<body>
+    <div class="bg-animation"></div>
+
+    <nav>
+        <ul>
+            <li><a href="#hero">HOME</a></li>
+            <li><a href="#background">배경</a></li>
+            <li><a href="#problems">문제점</a></li>
+            <li><a href="#solution">솔루션</a></li>
+            <li><a href="#features">기능</a></li>
+            <li><a href="#prototype" style="color: var(--primary);">🖥️ 프로토타입</a></li>
+            <li><a href="#ui">화면설계</a></li>
+            <li><a href="#effects">기대효과</a></li>
+            <li><a href="#roadmap">로드맵</a></li>
+            <li><a href="#closing" style="color: var(--accent-2);">결론</a></li>
+        </ul>
+    </nav>
+
+    <!-- Hero Section -->
+    <section id="hero" class="hero">
+        <div class="hero-content">
+            <span class="hero-badge">제5회 그린리모델링 챌린지 | 정책 아이디어 발굴</span>
+            <div style="display: inline-block; padding: 0.4rem 1rem; background: rgba(132, 94, 194, 0.2); border-radius: 20px; font-size: 0.8rem; color: var(--accent-2); margin-bottom: 1rem;">
+                세부주제 3 | 고령화·저출산·지역소멸 등 공동체 문제해결과 그린리모델링 연계
+            </div>
+            <h1>GRDP</h1>
+            <p class="hero-subtitle">
+                공공건축물 그린리모델링<br>
+                <strong>의사결정 지원 플랫폼</strong>
+            </p>
+            <p style="color: var(--text-muted); max-width: 700px; margin: 0 auto;">
+                경로당·어린이집·보건소 등 <strong style="color: var(--primary);">취약계층 이용시설</strong>의 그린리모델링을 통해<br>
+                <strong style="color: var(--accent-2);">고령화·저출산·지역소멸</strong> 문제에 대응하는 데이터 기반 의사결정 플랫폼
+            </p>
+            <div class="hero-stats">
+                <div class="stat-item">
+                    <span class="stat-number">50%</span>
+                    <span class="stat-label">의사결정 시간 단축</span>
+                </div>
+                <div class="stat-item">
+                    <span class="stat-number">40%</span>
+                    <span class="stat-label">예산 최적화 향상</span>
+                </div>
+                <div class="stat-item">
+                    <span class="stat-number">67%</span>
+                    <span class="stat-label">재조사율 감소</span>
+                </div>
+                <div class="stat-item">
+                    <span class="stat-number">10,000</span>
+                    <span class="stat-label">tCO2 감축 (10년)</span>
+                </div>
+            </div>
+
+            <!-- 플랫폼 바로가기 버튼 -->
+            <div style="margin-top: 3rem; animation: fadeInUp 0.8s ease 0.8s both;">
+                <a href="https://greenremodeling.vercel.app" target="_blank"
+                   style="display: inline-flex; align-items: center; gap: 0.75rem; padding: 1rem 2.5rem;
+                          background: linear-gradient(135deg, var(--primary) 0%, #00B88A 100%);
+                          color: #1A1A2E; font-weight: 700; font-size: 1.1rem; text-decoration: none;
+                          border-radius: 50px; box-shadow: var(--glow); transition: all 0.3s ease;">
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/>
+                        <polyline points="15 3 21 3 21 9"/>
+                        <line x1="10" y1="14" x2="21" y2="3"/>
+                    </svg>
+                    플랫폼 바로가기
+                </a>
+                <p style="margin-top: 1rem; font-size: 0.9rem; color: var(--text-muted);">
+                    https://greenremodeling.vercel.app
+                </p>
+            </div>
+        </div>
+    </section>
+
+    <!-- Background Section -->
+    <section id="background">
+        <div class="section-header fade-in">
+            <span class="section-tag">Background</span>
+            <h2 class="section-title">배경 및 목적</h2>
+            <p class="section-desc">2030 NDC 목표 달성을 위해 건물부문 32.8% 감축이 필요합니다</p>
+        </div>
+
+        <div class="stats-container fade-in">
+            <div class="stats-visual">
+                <h3 class="stats-title">2030 NDC 부문별 감축 목표</h3>
+                <div class="bar-chart">
+                    <div class="bar-item">
+                        <div class="bar-label">
+                            <span>전환</span>
+                            <span>44.4%</span>
+                        </div>
+                        <div class="bar-track">
+                            <div class="bar-fill danger" style="width: 44.4%"></div>
+                        </div>
+                    </div>
+                    <div class="bar-item">
+                        <div class="bar-label">
+                            <span>수송</span>
+                            <span>37.8%</span>
+                        </div>
+                        <div class="bar-track">
+                            <div class="bar-fill warning" style="width: 37.8%"></div>
+                        </div>
+                    </div>
+                    <div class="bar-item">
+                        <div class="bar-label">
+                            <span><strong>건물</strong></span>
+                            <span><strong>32.8%</strong></span>
+                        </div>
+                        <div class="bar-track">
+                            <div class="bar-fill success" style="width: 32.8%"></div>
+                        </div>
+                    </div>
+                    <div class="bar-item">
+                        <div class="bar-label">
+                            <span>산업</span>
+                            <span>14.5%</span>
+                        </div>
+                        <div class="bar-track">
+                            <div class="bar-fill info" style="width: 14.5%"></div>
+                        </div>
+                    </div>
+                </div>
+                <p style="margin-top: 1.5rem; font-size: 0.85rem; color: var(--text-muted);">
+                    건물부문: 52.1백만톤 → 35.0백만톤
+                </p>
+            </div>
+
+            <div class="stats-visual">
+                <h3 class="stats-title">그린리모델링 추진 현황</h3>
+                <div class="bar-chart">
+                    <div class="bar-item">
+                        <div class="bar-label">
+                            <span>노후 건축물 (30년↑)</span>
+                            <span>301만동</span>
+                        </div>
+                        <div class="bar-track">
+                            <div class="bar-fill danger" style="width: 100%"></div>
+                        </div>
+                    </div>
+                    <div class="bar-item">
+                        <div class="bar-label">
+                            <span>5년간 지원 실적</span>
+                            <span>3,470동 (0.1%)</span>
+                        </div>
+                        <div class="bar-track">
+                            <div class="bar-fill success" style="width: 1%"></div>
+                        </div>
+                    </div>
+                </div>
+                <p style="margin-top: 1.5rem; font-size: 0.85rem; color: var(--accent);">
+                    현재 속도로는 2050 탄소중립 목표 달성 불가능
+                </p>
+            </div>
+        </div>
+
+        <div class="table-wrapper fade-in mt-4">
+            <table class="comparison-table">
+                <thead>
+                    <tr>
+                        <th>연도</th>
+                        <th>지원 동수</th>
+                        <th>누적</th>
+                        <th>주요 대상</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>2020년</td>
+                        <td>821동</td>
+                        <td>821동</td>
+                        <td>어린이집, 보건소</td>
+                    </tr>
+                    <tr>
+                        <td>2021년</td>
+                        <td>895동</td>
+                        <td>1,716동</td>
+                        <td>어린이집, 보건소, 경로당</td>
+                    </tr>
+                    <tr>
+                        <td>2022년</td>
+                        <td>754동</td>
+                        <td>2,470동</td>
+                        <td>어린이집, 보건소, 경로당</td>
+                    </tr>
+                    <tr>
+                        <td>2023년</td>
+                        <td>471동</td>
+                        <td>2,941동</td>
+                        <td>어린이집, 보건소, 경로당, 도서관</td>
+                    </tr>
+                    <tr>
+                        <td>2024년</td>
+                        <td>529동</td>
+                        <td>3,470동</td>
+                        <td>경로당(319), 보건소(154), 어린이집(55)</td>
+                    </tr>
+                    <tr class="highlight-cell">
+                        <td>2025년</td>
+                        <td>261동 (예정)</td>
+                        <td>3,731동</td>
+                        <td>경로당, 보건소, 어린이집</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+
+        <!-- 공동체 문제해결 연계 섹션 추가 -->
+        <div class="algorithm-box fade-in mt-4" style="background: linear-gradient(145deg, rgba(132, 94, 194, 0.1), rgba(0, 217, 165, 0.05));">
+            <h3 class="text-center" style="margin-bottom: 2rem; color: var(--accent-2);">공동체 문제해결과 그린리모델링의 연계</h3>
+            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 2rem;">
+                <div style="text-align: center; padding: 1.5rem;">
+                    <div style="font-size: 2.5rem; margin-bottom: 1rem;">1</div>
+                    <h4 style="color: var(--primary); margin-bottom: 0.5rem;">고령화 대응</h4>
+                    <p style="font-size: 2rem; font-weight: 700; color: var(--text-light);">경로당</p>
+                    <p style="color: var(--text-muted); font-size: 0.9rem;">2024년 319동 지원 (전체의 60%)</p>
+                    <p style="color: var(--accent-2); font-size: 0.85rem; margin-top: 0.5rem;">어르신 건강·쾌적성 향상<br>지역사회 돌봄 인프라 강화</p>
+                </div>
+                <div style="text-align: center; padding: 1.5rem;">
+                    <div style="font-size: 2.5rem; margin-bottom: 1rem;">2</div>
+                    <h4 style="color: var(--primary); margin-bottom: 0.5rem;">저출산 대응</h4>
+                    <p style="font-size: 2rem; font-weight: 700; color: var(--text-light);">어린이집</p>
+                    <p style="color: var(--text-muted); font-size: 0.9rem;">2024년 55동 지원</p>
+                    <p style="color: var(--accent-2); font-size: 0.85rem; margin-top: 0.5rem;">영유아 건강 환경 조성<br>양육 친화적 인프라 구축</p>
+                </div>
+                <div style="text-align: center; padding: 1.5rem;">
+                    <div style="font-size: 2.5rem; margin-bottom: 1rem;">3</div>
+                    <h4 style="color: var(--primary); margin-bottom: 0.5rem;">지역소멸 대응</h4>
+                    <p style="font-size: 2rem; font-weight: 700; color: var(--text-light);">보건소</p>
+                    <p style="color: var(--text-muted); font-size: 0.9rem;">2024년 154동 지원</p>
+                    <p style="color: var(--accent-2); font-size: 0.85rem; margin-top: 0.5rem;">지역 의료서비스 품질 향상<br>지방 정주여건 개선</p>
+                </div>
+            </div>
+            <div style="margin-top: 2rem; text-align: center; padding: 1.5rem; background: rgba(0,0,0,0.3); border-radius: 12px;">
+                <p style="font-size: 1.1rem; color: var(--text-light);">
+                    <strong>GRDP의 역할:</strong> 취약계층 이용시설을 <span style="color: var(--primary);">우선순위에 반영</span>하여<br>
+                    <span style="color: var(--accent-2);">공동체 문제해결</span>과 <span style="color: var(--primary);">탄소중립</span>을 동시에 달성
+                </p>
+            </div>
+        </div>
+    </section>
+
+    <!-- Problems Section -->
+    <section id="problems">
+        <div class="section-header fade-in">
+            <span class="section-tag">Problems</span>
+            <h2 class="section-title">현장의 핵심 문제점</h2>
+            <p class="section-desc">그린리모델링 사업 추진 속도를 저해하는 요인들</p>
+        </div>
+
+        <div class="problems-grid">
+            <div class="card problem-card fade-in">
+                <div class="problem-icon">1</div>
+                <h3 class="problem-title">지자체 담당자 업무 과부하</h3>
+                <p class="problem-desc">
+                    공공건축물 관리 담당자는 경리, 행정, 안전관리까지 1인 다역을 수행합니다.
+                    특히 소규모 지자체일수록 담당자 과부하가 심각하며, 그린리모델링 전문 지식 부족으로
+                    "어떤 건물을 먼저 해야 하는지" 의사결정에 어려움을 겪고 있습니다.
+                </p>
+                <div class="quote-box">
+                    "현장 관리뿐만 아니라 경리, 행정, 안전 관리까지 담당자가 처리할 일이 많습니다.
+                    작은 현장일수록 모든 업무를 혼자 처리해야 하는 경우가 많아 과부하됩니다."
+                    <br><small>- 건축물관리지원센터 실태조사 (2023)</small>
+                </div>
+            </div>
+
+            <div class="card problem-card fade-in">
+                <div class="problem-icon">2</div>
+                <h3 class="problem-title">정보 분산 및 접근성 부족</h3>
+                <p class="problem-desc">
+                    3개 부처(산업부, 환경부, 국토부)가 별도 시스템을 운영하여 동일 정보를 중복 제출하는 비효율이 발생합니다.
+                    리모델링 의사결정에 필요한 통합 정보가 부재하여 담당자가 정보를 수집하는 데만 많은 시간을 소요합니다.
+                </p>
+                <div class="quote-box" style="padding: 1rem;">
+                    <table style="width: 100%; font-size: 0.85rem;">
+                        <tr><td style="color: var(--primary);">PEIS</td><td>에너지소비량 관리</td><td style="color: var(--accent);">의사결정 지원 없음</td></tr>
+                        <tr><td style="color: var(--primary);">온실가스정보센터</td><td>온실가스 배출량</td><td style="color: var(--accent);">심층분석 어려움</td></tr>
+                        <tr><td style="color: var(--primary);">에너지관리시스템</td><td>에너지진단</td><td style="color: var(--accent);">접근성 낮음</td></tr>
+                    </table>
+                </div>
+            </div>
+
+            <div class="card problem-card fade-in">
+                <div class="problem-icon">3</div>
+                <h3 class="problem-title">사전조사-설계 연계성 저하</h3>
+                <p class="problem-desc">
+                    대한건축학회 연구(2024)에 따르면, 사전조사 관련 장애사항이 가장 많이 인지되고 있으며,
+                    이는 사전조사자와 설계사 간 업무범위 이해 차이에서 비롯됩니다.
+                </p>
+                <div class="quote-box">
+                    "사전조사자와 설계사가 가지고 있는 사전조사의 업무범위에 대한 이해 차이는
+                    공공그린리모델링사업 사전조사결과물의 활용 연계성을 저하시킵니다."
+                    <br><small>- 대한건축학회 (2024)</small>
+                </div>
+            </div>
+
+            <div class="card fade-in" style="background: linear-gradient(145deg, rgba(0, 217, 165, 0.1), rgba(22, 22, 42, 0.8)); border-left: 4px solid var(--primary);">
+                <div class="problem-icon" style="background: rgba(0, 217, 165, 0.2);">!</div>
+                <h3 class="problem-title" style="color: var(--primary);">결과: 악순환 발생</h3>
+                <p class="problem-desc">
+                    정보 누락으로 인한 재조사 필요 → 시간/비용 낭비 → 사업 지연 → 탄소중립 목표 달성 어려움
+                </p>
+                <div style="text-align: center; margin-top: 2rem; font-size: 1.5rem;">
+                    정보 누락 → 재조사 → 지연 → 목표 미달
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Solution Section -->
+    <section id="solution">
+        <div class="section-header fade-in">
+            <span class="section-tag">Solution</span>
+            <h2 class="section-title">GRDP 패러다임 전환</h2>
+            <p class="section-desc">기존 시스템의 한계를 극복하는 새로운 접근</p>
+        </div>
+
+        <div class="table-wrapper fade-in">
+            <table class="comparison-table" style="text-align: center;">
+                <thead>
+                    <tr>
+                        <th style="width: 40%;">기존 패러다임</th>
+                        <th style="width: 20%; background: var(--primary); color: var(--secondary);">→</th>
+                        <th style="width: 40%;">GRDP 패러다임</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>에너지 <strong>모니터링</strong> 중심</td>
+                        <td style="color: var(--primary);">전환</td>
+                        <td class="highlight-cell"><strong>의사결정 지원</strong> 중심</td>
+                    </tr>
+                    <tr>
+                        <td><strong>전문가</strong> 대상 서비스</td>
+                        <td style="color: var(--primary);">전환</td>
+                        <td class="highlight-cell"><strong>실무 담당자</strong> 대상 서비스</td>
+                    </tr>
+                    <tr>
+                        <td><strong>개별 건물</strong> 관리</td>
+                        <td style="color: var(--primary);">전환</td>
+                        <td class="highlight-cell"><strong>포트폴리오</strong> 관리</td>
+                    </tr>
+                    <tr>
+                        <td>정보 <strong>분산</strong></td>
+                        <td style="color: var(--primary);">전환</td>
+                        <td class="highlight-cell">정보 <strong>통합</strong></td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+
+        <div class="flow-container fade-in">
+            <h3 class="text-center mb-4">사용자 플로우</h3>
+            <div class="flow-steps">
+                <div class="flow-step">
+                    <div class="flow-icon">1</div>
+                    <div class="flow-title">대시보드</div>
+                    <div class="flow-desc">현황 파악</div>
+                </div>
+                <div class="flow-step">
+                    <div class="flow-icon">2</div>
+                    <div class="flow-title">우선순위</div>
+                    <div class="flow-desc">어떤 건물부터?</div>
+                </div>
+                <div class="flow-step">
+                    <div class="flow-icon">3</div>
+                    <div class="flow-title">벤치마킹</div>
+                    <div class="flow-desc">유사 사례 조회</div>
+                </div>
+                <div class="flow-step">
+                    <div class="flow-icon">4</div>
+                    <div class="flow-title">시뮬레이션</div>
+                    <div class="flow-desc">효과 예측</div>
+                </div>
+                <div class="flow-step">
+                    <div class="flow-icon">5</div>
+                    <div class="flow-title">체크리스트</div>
+                    <div class="flow-desc">사전조사 수행</div>
+                </div>
+                <div class="flow-step">
+                    <div class="flow-icon">6</div>
+                    <div class="flow-title">신청</div>
+                    <div class="flow-desc">사업 신청</div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Features Section -->
+    <section id="features">
+        <div class="section-header fade-in">
+            <span class="section-tag">Features</span>
+            <h2 class="section-title">핵심 기능</h2>
+            <p class="section-desc">GRDP의 4대 핵심 기능으로 의사결정을 지원합니다</p>
+        </div>
+
+        <div class="features-grid">
+            <div class="card feature-card fade-in">
+                <span class="feature-number">01</span>
+                <div class="feature-icon">1</div>
+                <h3 class="feature-title">리모델링 우선순위 자동 산정</h3>
+                <p class="feature-desc">
+                    관내 공공건축물 중 그린리모델링 우선 대상을 객관적 기준으로 자동 추천합니다.
+                </p>
+                <ul class="feature-list">
+                    <li>건물 노후도 (25%)</li>
+                    <li>에너지 다소비 (25%)</li>
+                    <li>이용자 취약도 (20%)</li>
+                    <li>투자 효율성 (20%)</li>
+                    <li>지역 형평성 (10%)</li>
+                </ul>
+            </div>
+
+            <div class="card feature-card fade-in">
+                <span class="feature-number">02</span>
+                <div class="feature-icon">2</div>
+                <h3 class="feature-title">유사 건물 벤치마킹</h3>
+                <p class="feature-desc">
+                    "우리 건물과 비슷한 건물은 어떻게 리모델링했는지" 사례를 제공합니다.
+                </p>
+                <ul class="feature-list">
+                    <li>유클리디안 거리 기반 유사도 계산</li>
+                    <li>용도, 면적, 준공연도, 기후대 매칭</li>
+                    <li>실측 효과 데이터 제공</li>
+                    <li>담당자 후기 및 팁 공유</li>
+                </ul>
+            </div>
+
+            <div class="card feature-card fade-in">
+                <span class="feature-number">03</span>
+                <div class="feature-icon">3</div>
+                <h3 class="feature-title">사전조사 체크리스트 자동 생성</h3>
+                <p class="feature-desc">
+                    사전조사-설계 연계성을 강화하고 정보 누락을 방지합니다.
+                </p>
+                <ul class="feature-list">
+                    <li>건물 유형별 맞춤 체크리스트</li>
+                    <li>필수/선택 항목 구분</li>
+                    <li>사진 첨부 가이드</li>
+                    <li>설계사 전달용 보고서 자동 생성</li>
+                </ul>
+            </div>
+
+            <div class="card feature-card fade-in">
+                <span class="feature-number">04</span>
+                <div class="feature-icon">4</div>
+                <h3 class="feature-title">예상 효과 시뮬레이션</h3>
+                <p class="feature-desc">
+                    리모델링 항목별 예상 효과를 시각화하여 의사결정을 지원합니다.
+                </p>
+                <ul class="feature-list">
+                    <li>에너지 절감량 (kWh/년)</li>
+                    <li>CO2 감축량 (tCO2/년)</li>
+                    <li>비용 절감액 (원/년)</li>
+                    <li>투자비 회수기간 (년)</li>
+                </ul>
+            </div>
+        </div>
+
+        <!-- Algorithm -->
+        <div class="algorithm-box fade-in">
+            <h3 class="text-center mb-4">우선순위 산정 알고리즘</h3>
+            <div class="formula">
+                우선순위 점수 = &Sigma;(지표별 정규화 점수 &times; 가중치)
+            </div>
+            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 1rem; margin-top: 2rem;">
+                <div style="background: rgba(0,0,0,0.3); padding: 1rem; border-radius: 12px;">
+                    <strong style="color: var(--primary);">노후도 점수</strong><br>
+                    <code style="color: var(--text-muted);">(현재연도 - 준공연도) / 최대노후연수 × 100</code>
+                </div>
+                <div style="background: rgba(0,0,0,0.3); padding: 1rem; border-radius: 12px;">
+                    <strong style="color: var(--primary);">에너지 점수</strong><br>
+                    <code style="color: var(--text-muted);">(건물EUI - 최소EUI) / (최대EUI - 최소EUI) × 100</code>
+                </div>
+                <div style="background: rgba(0,0,0,0.3); padding: 1rem; border-radius: 12px;">
+                    <strong style="color: var(--primary);">유사도 계산</strong><br>
+                    <code style="color: var(--text-muted);">1 / (1 + &radic;&Sigma;(w<sub>i</sub> × (x<sub>i</sub> - y<sub>i</sub>)&sup2;))</code>
+                </div>
+                <div style="background: rgba(0,0,0,0.3); padding: 1rem; border-radius: 12px;">
+                    <strong style="color: var(--primary);">CO2 감축량</strong><br>
+                    <code style="color: var(--text-muted);">절감량 × 0.4594 kgCO2/kWh</code>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Live Prototype Section -->
+    <section id="prototype" style="padding-bottom: 2rem;">
+        <div class="section-header fade-in">
+            <span class="section-tag">Live Demo</span>
+            <h2 class="section-title">🖥️ 실제 작동하는 프로토타입</h2>
+            <p class="section-desc">500개 이상의 목업 데이터로 실제 사용 시나리오를 구현했습니다</p>
+        </div>
+
+        <!-- 발표용 안내 박스 -->
+        <div class="fade-in" style="background: linear-gradient(135deg, rgba(0, 217, 165, 0.1), rgba(132, 94, 194, 0.1)); border-radius: 16px; padding: 1.5rem 2rem; margin-bottom: 2rem; border: 1px solid rgba(0, 217, 165, 0.3); display: flex; align-items: center; gap: 1rem; flex-wrap: wrap;">
+            <span style="font-size: 2rem;">💡</span>
+            <div>
+                <strong style="color: var(--primary); font-size: 1.1rem;">발표자 안내</strong>
+                <p style="color: var(--text-muted); margin: 0.3rem 0 0; font-size: 0.9rem;">아래 프로토타입을 스크롤하여 대시보드, 우선순위, 벤치마킹 기능을 시연하세요. (탭 전환 불필요)</p>
+            </div>
+        </div>
+
+        <!-- 프로토타입 iframe -->
+        <div class="fade-in" style="background: var(--bg-card); border-radius: 24px; padding: 1rem; border: 2px solid var(--primary); box-shadow: 0 0 60px rgba(0, 217, 165, 0.2);">
+            <div style="display: flex; align-items: center; gap: 0.8rem; padding: 0.8rem 1rem; background: rgba(0,0,0,0.3); border-radius: 12px 12px 0 0; margin: -1rem -1rem 1rem -1rem;">
+                <div style="display: flex; gap: 6px;">
+                    <span style="width: 12px; height: 12px; background: #FF5F57; border-radius: 50%;"></span>
+                    <span style="width: 12px; height: 12px; background: #FFBD2E; border-radius: 50%;"></span>
+                    <span style="width: 12px; height: 12px; background: #28CA41; border-radius: 50%;"></span>
+                </div>
+                <span style="color: var(--text-muted); font-size: 0.85rem; background: rgba(255,255,255,0.1); padding: 0.3rem 1rem; border-radius: 6px; flex: 1; text-align: center;">greenremodeling.vercel.app</span>
+                <a href="https://greenremodeling.vercel.app" target="_blank" style="color: var(--primary); font-size: 0.8rem; text-decoration: none;">새 탭에서 열기 ↗</a>
+            </div>
+            <iframe
+                src="https://greenremodeling.vercel.app"
+                style="width: 100%; height: 700px; border: none; border-radius: 12px; background: #0a0a0f;"
+                loading="lazy"
+                title="GRDP 프로토타입"
+            ></iframe>
+        </div>
+
+        <!-- 프로토타입 기능 안내 -->
+        <div class="fade-in" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1rem; margin-top: 2rem;">
+            <div style="background: var(--bg-card); padding: 1.2rem; border-radius: 12px; text-align: center; border: 1px solid rgba(255,255,255,0.05);">
+                <span style="font-size: 1.5rem;">📊</span>
+                <p style="color: var(--text-light); font-weight: 600; margin: 0.5rem 0 0.2rem;">대시보드</p>
+                <p style="color: var(--text-muted); font-size: 0.8rem; margin: 0;">통계 카드, 지도, 차트</p>
+            </div>
+            <div style="background: var(--bg-card); padding: 1.2rem; border-radius: 12px; text-align: center; border: 1px solid rgba(255,255,255,0.05);">
+                <span style="font-size: 1.5rem;">🎯</span>
+                <p style="color: var(--text-light); font-weight: 600; margin: 0.5rem 0 0.2rem;">우선순위</p>
+                <p style="color: var(--text-muted); font-size: 0.8rem; margin: 0;">건물 목록, 상세 분석</p>
+            </div>
+            <div style="background: var(--bg-card); padding: 1.2rem; border-radius: 12px; text-align: center; border: 1px solid rgba(255,255,255,0.05);">
+                <span style="font-size: 1.5rem;">📈</span>
+                <p style="color: var(--text-light); font-weight: 600; margin: 0.5rem 0 0.2rem;">벤치마킹</p>
+                <p style="color: var(--text-muted); font-size: 0.8rem; margin: 0;">유사 사례 검색</p>
+            </div>
+            <div style="background: var(--bg-card); padding: 1.2rem; border-radius: 12px; text-align: center; border: 1px solid rgba(255,255,255,0.05);">
+                <span style="font-size: 1.5rem;">🧮</span>
+                <p style="color: var(--text-light); font-weight: 600; margin: 0.5rem 0 0.2rem;">시뮬레이션</p>
+                <p style="color: var(--text-muted); font-size: 0.8rem; margin: 0;">효과 예측 계산</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- UI Preview Section -->
+    <section id="ui">
+        <div class="section-header fade-in">
+            <span class="section-tag">UI Design</span>
+            <h2 class="section-title">화면 설계안</h2>
+            <p class="section-desc">직관적이고 사용하기 쉬운 인터페이스</p>
+        </div>
+
+        <div class="ui-preview fade-in">
+            <div class="ui-tabs">
+                <button class="ui-tab active" onclick="showUI('dashboard')">대시보드</button>
+                <button class="ui-tab" onclick="showUI('priority')">우선순위</button>
+                <button class="ui-tab" onclick="showUI('benchmark')">벤치마킹</button>
+                <button class="ui-tab" onclick="showUI('simulation')">시뮬레이션</button>
+                <button class="ui-tab" onclick="showUI('checklist')">체크리스트</button>
+            </div>
+
+            <!-- Dashboard UI -->
+            <div id="dashboard" class="ui-content active">
+                <div class="mock-browser">
+                    <div class="mock-browser-header">
+                        <div class="mock-dots">
+                            <span class="mock-dot red"></span>
+                            <span class="mock-dot yellow"></span>
+                            <span class="mock-dot green"></span>
+                        </div>
+                        <div class="mock-url">https://grdp.go.kr/dashboard</div>
+                    </div>
+                    <div class="mock-browser-body">
+                        <!-- App Header -->
+                        <div class="app-header">
+                            <div class="app-logo">GRDP</div>
+                            <div class="app-nav">
+                                <span class="app-nav-item active">대시보드</span>
+                                <span class="app-nav-item">우선순위</span>
+                                <span class="app-nav-item">벤치마킹</span>
+                                <span class="app-nav-item">시뮬레이션</span>
+                                <span class="app-nav-item">보고서</span>
+                            </div>
+                            <div class="app-user">OO시 담당자</div>
+                        </div>
+
+                        <!-- Dashboard Content -->
+                        <div class="app-content">
+                            <div class="dashboard-grid">
+                                <!-- Stats Cards -->
+                                <div class="dash-card stats-card">
+                                    <div class="dash-card-title">OO시 공공건축물 현황</div>
+                                    <div class="stats-row">
+                                        <div class="stat-box">
+                                            <div class="stat-big-number">127</div>
+                                            <div class="stat-small-label">총 건물 수</div>
+                                        </div>
+                                        <div class="stat-box highlight-box">
+                                            <div class="stat-big-number">23</div>
+                                            <div class="stat-small-label">리모델링 완료</div>
+                                        </div>
+                                        <div class="stat-box warning-box">
+                                            <div class="stat-big-number">89</div>
+                                            <div class="stat-small-label">노후 10년↑</div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!-- Priority List -->
+                                <div class="dash-card priority-card">
+                                    <div class="dash-card-title">리모델링 우선순위 TOP 5</div>
+                                    <div class="priority-list">
+                                        <div class="priority-item">
+                                            <span class="priority-rank">1</span>
+                                            <span class="priority-name">A경로당</span>
+                                            <div class="priority-bar-wrap">
+                                                <div class="priority-bar" style="width: 91%"></div>
+                                            </div>
+                                            <span class="priority-score">91점</span>
+                                        </div>
+                                        <div class="priority-item">
+                                            <span class="priority-rank">2</span>
+                                            <span class="priority-name">B어린이집</span>
+                                            <div class="priority-bar-wrap">
+                                                <div class="priority-bar" style="width: 87%"></div>
+                                            </div>
+                                            <span class="priority-score">87점</span>
+                                        </div>
+                                        <div class="priority-item">
+                                            <span class="priority-rank">3</span>
+                                            <span class="priority-name">C보건소</span>
+                                            <div class="priority-bar-wrap">
+                                                <div class="priority-bar" style="width: 78%"></div>
+                                            </div>
+                                            <span class="priority-score">78점</span>
+                                        </div>
+                                        <div class="priority-item">
+                                            <span class="priority-rank">4</span>
+                                            <span class="priority-name">D경로당</span>
+                                            <div class="priority-bar-wrap">
+                                                <div class="priority-bar" style="width: 72%"></div>
+                                            </div>
+                                            <span class="priority-score">72점</span>
+                                        </div>
+                                        <div class="priority-item">
+                                            <span class="priority-rank">5</span>
+                                            <span class="priority-name">E어린이집</span>
+                                            <div class="priority-bar-wrap">
+                                                <div class="priority-bar" style="width: 68%"></div>
+                                            </div>
+                                            <span class="priority-score">68점</span>
+                                        </div>
+                                    </div>
+                                    <button class="view-all-btn">전체 순위 보기 →</button>
+                                </div>
+
+                                <!-- Map -->
+                                <div class="dash-card map-card">
+                                    <div class="dash-card-title">관내 공공건축물 지도</div>
+                                    <div class="mock-map">
+                                        <div class="map-marker red" style="top: 20%; left: 30%;">
+                                            <span class="marker-tooltip">A경로당<br><small>우선순위 1위</small></span>
+                                        </div>
+                                        <div class="map-marker red" style="top: 45%; left: 20%;"><span class="marker-tooltip">B어린이집</span></div>
+                                        <div class="map-marker yellow" style="top: 35%; left: 55%;"><span class="marker-tooltip">C보건소</span></div>
+                                        <div class="map-marker yellow" style="top: 60%; left: 40%;"><span class="marker-tooltip">D경로당</span></div>
+                                        <div class="map-marker green" style="top: 50%; left: 75%;"><span class="marker-tooltip">F도서관<br><small>완료</small></span></div>
+                                        <div class="map-legend">
+                                            <span class="legend-item"><span class="legend-dot red"></span>우선순위 상위</span>
+                                            <span class="legend-item"><span class="legend-dot yellow"></span>중위</span>
+                                            <span class="legend-item"><span class="legend-dot green"></span>완료</span>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!-- Alerts -->
+                                <div class="dash-card alerts-card">
+                                    <div class="dash-card-title">알림</div>
+                                    <div class="alert-list">
+                                        <div class="alert-item new">A경로당 사전조사 신청 가능</div>
+                                        <div class="alert-item new">2025년 지원사업 공고 확인</div>
+                                        <div class="alert-item">B어린이집 벤치마킹 데이터 갱신</div>
+                                        <div class="alert-item">3건의 새로운 성공사례 등록</div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Priority UI -->
+            <div id="priority" class="ui-content">
+                <div class="mock-browser">
+                    <div class="mock-browser-header">
+                        <div class="mock-dots">
+                            <span class="mock-dot red"></span>
+                            <span class="mock-dot yellow"></span>
+                            <span class="mock-dot green"></span>
+                        </div>
+                        <div class="mock-url">https://grdp.go.kr/priority</div>
+                    </div>
+                    <div class="mock-browser-body">
+                        <div class="app-header">
+                            <div class="app-logo">GRDP</div>
+                            <div class="app-nav">
+                                <span class="app-nav-item">대시보드</span>
+                                <span class="app-nav-item active">우선순위</span>
+                                <span class="app-nav-item">벤치마킹</span>
+                                <span class="app-nav-item">시뮬레이션</span>
+                            </div>
+                            <div class="app-user">OO시 담당자</div>
+                        </div>
+
+                        <div class="app-content">
+                            <h2 class="page-title">그린리모델링 우선순위 분석</h2>
+
+                            <!-- Filters -->
+                            <div class="filter-bar">
+                                <div class="filter-group">
+                                    <label>건물유형</label>
+                                    <select class="filter-select">
+                                        <option>전체</option>
+                                        <option>경로당</option>
+                                        <option>어린이집</option>
+                                        <option>보건소</option>
+                                    </select>
+                                </div>
+                                <div class="filter-group">
+                                    <label>노후도</label>
+                                    <select class="filter-select">
+                                        <option>10년 이상</option>
+                                        <option>20년 이상</option>
+                                        <option>30년 이상</option>
+                                    </select>
+                                </div>
+                                <div class="filter-group">
+                                    <label>지역</label>
+                                    <select class="filter-select">
+                                        <option>전체</option>
+                                    </select>
+                                </div>
+                                <button class="search-btn">검색</button>
+                            </div>
+
+                            <!-- Table -->
+                            <div class="data-table">
+                                <div class="table-header">
+                                    <span class="col-rank">순위</span>
+                                    <span class="col-name">건물명</span>
+                                    <span class="col-type">유형</span>
+                                    <span class="col-year">준공</span>
+                                    <span class="col-area">면적</span>
+                                    <span class="col-score">종합점수</span>
+                                </div>
+                                <div class="table-row selected">
+                                    <span class="col-rank"><span class="rank-badge">1</span></span>
+                                    <span class="col-name">A경로당</span>
+                                    <span class="col-type"><span class="type-tag">경로당</span></span>
+                                    <span class="col-year">1992</span>
+                                    <span class="col-area">120㎡</span>
+                                    <span class="col-score">
+                                        <div class="score-bar-mini"><div style="width:91%"></div></div>
+                                        <strong>91점</strong>
+                                    </span>
+                                </div>
+                                <div class="table-row">
+                                    <span class="col-rank"><span class="rank-badge">2</span></span>
+                                    <span class="col-name">B어린이집</span>
+                                    <span class="col-type"><span class="type-tag orange">어린이집</span></span>
+                                    <span class="col-year">1995</span>
+                                    <span class="col-area">250㎡</span>
+                                    <span class="col-score">
+                                        <div class="score-bar-mini"><div style="width:87%"></div></div>
+                                        <strong>87점</strong>
+                                    </span>
+                                </div>
+                                <div class="table-row">
+                                    <span class="col-rank"><span class="rank-badge">3</span></span>
+                                    <span class="col-name">C보건소</span>
+                                    <span class="col-type"><span class="type-tag blue">보건소</span></span>
+                                    <span class="col-year">1998</span>
+                                    <span class="col-area">450㎡</span>
+                                    <span class="col-score">
+                                        <div class="score-bar-mini"><div style="width:78%"></div></div>
+                                        <strong>78점</strong>
+                                    </span>
+                                </div>
+                            </div>
+
+                            <!-- Detail Panel -->
+                            <div class="detail-panel">
+                                <div class="detail-header">선택 건물 상세 분석: <strong>A경로당</strong></div>
+                                <div class="detail-content">
+                                    <div class="detail-chart">
+                                        <div class="chart-title">평가지표별 점수</div>
+                                        <div class="radar-bars">
+                                            <div class="radar-item"><span>노후도</span><div class="radar-bar"><div style="width:92%"></div></div><span>92</span></div>
+                                            <div class="radar-item"><span>에너지</span><div class="radar-bar"><div style="width:88%"></div></div><span>88</span></div>
+                                            <div class="radar-item"><span>취약도</span><div class="radar-bar"><div style="width:95%"></div></div><span>95</span></div>
+                                            <div class="radar-item"><span>효율성</span><div class="radar-bar"><div style="width:85%"></div></div><span>85</span></div>
+                                            <div class="radar-item"><span>형평성</span><div class="radar-bar"><div style="width:96%"></div></div><span>96</span></div>
+                                        </div>
+                                    </div>
+                                    <div class="detail-info">
+                                        <div class="chart-title">기본 정보</div>
+                                        <ul class="info-list">
+                                            <li><span class="info-label">주소</span><span class="info-value">OO시 OO동 123-4</span></li>
+                                            <li><span class="info-label">준공연도</span><span class="info-value">1992년 (33년)</span></li>
+                                            <li><span class="info-label">연면적</span><span class="info-value">120㎡</span></li>
+                                            <li><span class="info-label">에너지효율</span><span class="info-value"><span class="grade-badge">5등급</span></span></li>
+                                            <li><span class="info-label">일평균 이용자</span><span class="info-value">45명 (노인)</span></li>
+                                        </ul>
+                                    </div>
+                                </div>
+                                <div class="detail-actions">
+                                    <button class="action-btn">벤치마킹 건물 찾기</button>
+                                    <button class="action-btn primary">시뮬레이션</button>
+                                    <button class="action-btn">사전조사 체크리스트</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Benchmark UI -->
+            <div id="benchmark" class="ui-content">
+                <div class="mock-browser">
+                    <div class="mock-browser-header">
+                        <div class="mock-dots">
+                            <span class="mock-dot red"></span>
+                            <span class="mock-dot yellow"></span>
+                            <span class="mock-dot green"></span>
+                        </div>
+                        <div class="mock-url">https://grdp.go.kr/benchmark/a-senior</div>
+                    </div>
+                    <div class="mock-browser-body">
+                        <div class="app-header">
+                            <div class="app-logo">GRDP</div>
+                            <div class="app-nav">
+                                <span class="app-nav-item">대시보드</span>
+                                <span class="app-nav-item">우선순위</span>
+                                <span class="app-nav-item active">벤치마킹</span>
+                                <span class="app-nav-item">시뮬레이션</span>
+                            </div>
+                            <div class="app-user">OO시 담당자</div>
+                        </div>
+
+                        <div class="app-content">
+                            <h2 class="page-title">유사 건물 벤치마킹 - A경로당</h2>
+
+                            <!-- Match Info -->
+                            <div class="match-info-box">
+                                <div class="match-target">
+                                    <strong>대상건물:</strong> A경로당 (1992년, 120㎡, 경로당)
+                                </div>
+                                <div class="match-criteria">
+                                    <strong>매칭기준:</strong> 용도 동일 / 면적 ±20% / 준공연도 ±5년 / 기후대 유사
+                                </div>
+                            </div>
+
+                            <!-- Similar Buildings -->
+                            <div class="bench-title">유사 건물 TOP 3</div>
+                            <div class="bench-cards">
+                                <div class="bench-card best">
+                                    <div class="bench-badge">유사도 94%</div>
+                                    <div class="bench-name">XX시 OO경로당</div>
+                                    <div class="bench-details">
+                                        <div class="bench-row"><span>준공</span><span>1990년</span></div>
+                                        <div class="bench-row"><span>면적</span><span>115㎡</span></div>
+                                        <div class="bench-row"><span>리모델링</span><span>2023년</span></div>
+                                        <div class="bench-row highlight"><span>사업비</span><span>85백만원</span></div>
+                                        <div class="bench-row highlight"><span>절감률</span><span>38%</span></div>
+                                    </div>
+                                    <button class="bench-btn">상세보기</button>
+                                </div>
+                                <div class="bench-card">
+                                    <div class="bench-badge">유사도 89%</div>
+                                    <div class="bench-name">YY시 △△경로당</div>
+                                    <div class="bench-details">
+                                        <div class="bench-row"><span>준공</span><span>1993년</span></div>
+                                        <div class="bench-row"><span>면적</span><span>130㎡</span></div>
+                                        <div class="bench-row"><span>리모델링</span><span>2022년</span></div>
+                                        <div class="bench-row highlight"><span>사업비</span><span>92백만원</span></div>
+                                        <div class="bench-row highlight"><span>절감률</span><span>35%</span></div>
+                                    </div>
+                                    <button class="bench-btn">상세보기</button>
+                                </div>
+                                <div class="bench-card">
+                                    <div class="bench-badge">유사도 85%</div>
+                                    <div class="bench-name">ZZ시 □□경로당</div>
+                                    <div class="bench-details">
+                                        <div class="bench-row"><span>준공</span><span>1991년</span></div>
+                                        <div class="bench-row"><span>면적</span><span>108㎡</span></div>
+                                        <div class="bench-row"><span>리모델링</span><span>2024년</span></div>
+                                        <div class="bench-row highlight"><span>사업비</span><span>78백만원</span></div>
+                                        <div class="bench-row highlight"><span>절감률</span><span>42%</span></div>
+                                    </div>
+                                    <button class="bench-btn">상세보기</button>
+                                </div>
+                            </div>
+
+                            <!-- Review -->
+                            <div class="review-box">
+                                <div class="review-header">
+                                    <span class="review-icon">💬</span>
+                                    담당자 후기 (XX시 OO경로당)
+                                </div>
+                                <div class="review-content">
+                                    "사전조사 단계에서 창호 규격을 정확히 파악하는 것이 중요합니다.
+                                    노인분들이 많이 사용하시므로 공사 기간 중 대체 공간 확보가
+                                    필요했습니다. 리모델링 후 <strong>난방비가 40% 가까이 줄어</strong> 만족도가
+                                    매우 높습니다."
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Simulation UI -->
+            <div id="simulation" class="ui-content">
+                <div class="mock-browser">
+                    <div class="mock-browser-header">
+                        <div class="mock-dots">
+                            <span class="mock-dot red"></span>
+                            <span class="mock-dot yellow"></span>
+                            <span class="mock-dot green"></span>
+                        </div>
+                        <div class="mock-url">https://grdp.go.kr/simulation/a-senior</div>
+                    </div>
+                    <div class="mock-browser-body">
+                        <div class="app-header">
+                            <div class="app-logo">GRDP</div>
+                            <div class="app-nav">
+                                <span class="app-nav-item">대시보드</span>
+                                <span class="app-nav-item">우선순위</span>
+                                <span class="app-nav-item">벤치마킹</span>
+                                <span class="app-nav-item active">시뮬레이션</span>
+                            </div>
+                            <div class="app-user">OO시 담당자</div>
+                        </div>
+
+                        <div class="app-content">
+                            <h2 class="page-title">리모델링 효과 시뮬레이션 - A경로당</h2>
+
+                            <!-- Options -->
+                            <div class="sim-options">
+                                <div class="sim-option-group">
+                                    <div class="sim-group-title">외피 개선</div>
+                                    <label class="sim-checkbox checked"><input type="checkbox" checked><span class="checkmark"></span>외벽 단열 보강<select class="inline-select"><option>압출법보온판 100mm</option></select></label>
+                                    <label class="sim-checkbox checked"><input type="checkbox" checked><span class="checkmark"></span>창호 교체<select class="inline-select"><option>로이삼중유리</option></select></label>
+                                    <label class="sim-checkbox"><input type="checkbox"><span class="checkmark"></span>지붕 단열 보강</label>
+                                </div>
+                                <div class="sim-option-group">
+                                    <div class="sim-group-title">설비 개선</div>
+                                    <label class="sim-checkbox checked"><input type="checkbox" checked><span class="checkmark"></span>보일러 교체<select class="inline-select"><option>콘덴싱보일러</option></select></label>
+                                    <label class="sim-checkbox checked"><input type="checkbox" checked><span class="checkmark"></span>LED 조명 교체</label>
+                                    <label class="sim-checkbox"><input type="checkbox"><span class="checkmark"></span>환기시스템 설치</label>
+                                    <label class="sim-checkbox"><input type="checkbox"><span class="checkmark"></span>태양광 설치 (3kW)</label>
+                                </div>
+                            </div>
+
+                            <!-- Results -->
+                            <div class="sim-results">
+                                <div class="sim-result-header">시뮬레이션 결과</div>
+
+                                <div class="energy-comparison">
+                                    <div class="energy-bar-group">
+                                        <div class="energy-label">현재</div>
+                                        <div class="energy-bar-wrap">
+                                            <div class="energy-bar current" style="width: 100%"></div>
+                                        </div>
+                                        <div class="energy-value">24,500 kWh/년</div>
+                                    </div>
+                                    <div class="energy-bar-group">
+                                        <div class="energy-label">리모델링 후</div>
+                                        <div class="energy-bar-wrap">
+                                            <div class="energy-bar after" style="width: 62%"></div>
+                                        </div>
+                                        <div class="energy-value">15,200 kWh/년</div>
+                                    </div>
+                                    <div class="energy-saving">절감량: <strong>9,300 kWh/년</strong> (38% ↓)</div>
+                                </div>
+
+                                <div class="result-cards">
+                                    <div class="result-card">
+                                        <div class="result-icon">⚡</div>
+                                        <div class="result-value">9,300</div>
+                                        <div class="result-unit">kWh/년</div>
+                                        <div class="result-label">에너지 절감</div>
+                                    </div>
+                                    <div class="result-card">
+                                        <div class="result-icon">🌱</div>
+                                        <div class="result-value">4.3</div>
+                                        <div class="result-unit">tCO2/년</div>
+                                        <div class="result-label">CO2 감축</div>
+                                    </div>
+                                    <div class="result-card">
+                                        <div class="result-icon">💰</div>
+                                        <div class="result-value">186</div>
+                                        <div class="result-unit">만원/년</div>
+                                        <div class="result-label">비용 절감</div>
+                                    </div>
+                                    <div class="result-card">
+                                        <div class="result-icon">📅</div>
+                                        <div class="result-value">7.2</div>
+                                        <div class="result-unit">년</div>
+                                        <div class="result-label">회수 기간</div>
+                                    </div>
+                                </div>
+
+                                <div class="cost-summary">
+                                    <div class="cost-row">
+                                        <span>예상 사업비</span>
+                                        <span class="cost-value">85,000,000원</span>
+                                    </div>
+                                    <div class="cost-row highlight">
+                                        <span>정부 지원금 100% 적용 시</span>
+                                        <span class="cost-value green">0원</span>
+                                    </div>
+                                </div>
+
+                                <div class="sim-actions">
+                                    <button class="sim-btn">보고서 생성</button>
+                                    <button class="sim-btn primary">사전조사 신청</button>
+                                    <button class="sim-btn">결재 상신</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Checklist UI -->
+            <div id="checklist" class="ui-content">
+                <div class="mock-browser">
+                    <div class="mock-browser-header">
+                        <div class="mock-dots">
+                            <span class="mock-dot red"></span>
+                            <span class="mock-dot yellow"></span>
+                            <span class="mock-dot green"></span>
+                        </div>
+                        <div class="mock-url">https://grdp.go.kr/checklist/a-senior</div>
+                    </div>
+                    <div class="mock-browser-body">
+                        <div class="app-header">
+                            <div class="app-logo">GRDP</div>
+                            <div class="app-nav">
+                                <span class="app-nav-item">대시보드</span>
+                                <span class="app-nav-item">우선순위</span>
+                                <span class="app-nav-item">벤치마킹</span>
+                                <span class="app-nav-item">시뮬레이션</span>
+                            </div>
+                            <div class="app-user">OO시 담당자</div>
+                        </div>
+
+                        <div class="app-content">
+                            <h2 class="page-title">사전조사 체크리스트 - A경로당</h2>
+
+                            <!-- Progress -->
+                            <div class="checklist-progress">
+                                <div class="progress-info">
+                                    <span>진행률</span>
+                                    <span class="progress-percent">65%</span>
+                                </div>
+                                <div class="progress-bar-wrap">
+                                    <div class="progress-bar-fill" style="width: 65%"></div>
+                                </div>
+                                <div class="progress-count">13/20 항목 완료</div>
+                            </div>
+
+                            <!-- Section 1 -->
+                            <div class="checklist-section completed">
+                                <div class="section-header-row">
+                                    <span class="section-title">1. 기본정보 (필수)</span>
+                                    <span class="section-status done">✓ 완료</span>
+                                </div>
+                                <div class="checklist-items">
+                                    <div class="check-item done"><span class="check-box checked"></span><span class="check-label">건물명</span><span class="check-value">A경로당</span></div>
+                                    <div class="check-item done"><span class="check-box checked"></span><span class="check-label">주소</span><span class="check-value">OO시 OO구 OO동 123-4</span></div>
+                                    <div class="check-item done"><span class="check-box checked"></span><span class="check-label">준공연도</span><span class="check-value">1992년</span></div>
+                                    <div class="check-item done"><span class="check-box checked"></span><span class="check-label">연면적</span><span class="check-value">120㎡</span></div>
+                                </div>
+                            </div>
+
+                            <!-- Section 2 -->
+                            <div class="checklist-section in-progress">
+                                <div class="section-header-row">
+                                    <span class="section-title">2. 외피현황 (필수)</span>
+                                    <span class="section-status progress">진행중</span>
+                                </div>
+                                <div class="checklist-items">
+                                    <div class="check-item done"><span class="check-box checked"></span><span class="check-label">외벽 구조</span><span class="check-value">조적조</span></div>
+                                    <div class="check-item done"><span class="check-box checked"></span><span class="check-label">외벽 단열재 종류</span><span class="check-value">스티로폼</span></div>
+                                    <div class="check-item pending"><span class="check-box"></span><span class="check-label">외벽 상태 사진</span><button class="upload-btn">📷 사진 첨부</button><span class="warning-tag">⚠️ 필수</span></div>
+                                    <div class="check-item done"><span class="check-box checked"></span><span class="check-label">창호 종류</span><span class="check-value">알루미늄 이중창</span></div>
+                                    <div class="check-item pending"><span class="check-box"></span><span class="check-label">창호 규격</span><input type="text" placeholder="가로 mm" class="size-input"> × <input type="text" placeholder="세로 mm" class="size-input"></div>
+                                </div>
+                            </div>
+
+                            <!-- Help Box -->
+                            <div class="help-box">
+                                <div class="help-title">💡 작성 도움말</div>
+                                <ul class="help-list">
+                                    <li>외벽 단열 두께는 건축물대장 또는 현장 실측으로 확인해주세요</li>
+                                    <li>사진은 최소 3장 이상 (정면, 측면, 문제부위) 첨부해주세요</li>
+                                    <li>유사 건물 체크리스트를 참고하시겠습니까? <a href="#">참고하기</a></li>
+                                </ul>
+                            </div>
+
+                            <!-- Actions -->
+                            <div class="checklist-actions">
+                                <button class="check-btn">임시저장</button>
+                                <button class="check-btn">이전 단계</button>
+                                <button class="check-btn">다음 단계</button>
+                                <button class="check-btn primary">완료 및 제출</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- System Architecture -->
+        <div class="architecture fade-in">
+            <h3 class="text-center mb-4">시스템 아키텍처</h3>
+
+            <div class="arch-layer">
+                <div class="arch-layer-title">Frontend</div>
+                <div class="arch-items">
+                    <div class="arch-item">대시보드</div>
+                    <div class="arch-item">우선순위분석</div>
+                    <div class="arch-item">벤치마킹</div>
+                    <div class="arch-item">시뮬레이션</div>
+                    <div class="arch-item">체크리스트</div>
+                </div>
+            </div>
+
+            <div class="arch-arrow">↓</div>
+
+            <div class="arch-layer">
+                <div class="arch-layer-title">Backend (API Server)</div>
+                <div class="arch-items">
+                    <div class="arch-item">우선순위 산정 알고리즘</div>
+                    <div class="arch-item">유사도 계산 알고리즘</div>
+                    <div class="arch-item">시뮬레이션 엔진</div>
+                    <div class="arch-item">보고서 생성 엔진</div>
+                </div>
+            </div>
+
+            <div class="arch-arrow">↓</div>
+
+            <div class="arch-layer">
+                <div class="arch-layer-title">Data Integration Layer</div>
+                <div class="arch-items">
+                    <div class="arch-item">PEIS (에너지소비)</div>
+                    <div class="arch-item">건물에너지 통합DB</div>
+                    <div class="arch-item">건축물대장</div>
+                    <div class="arch-item">기상청 데이터</div>
+                    <div class="arch-item">인구통계</div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Expected Effects -->
+    <section id="effects">
+        <div class="section-header fade-in">
+            <span class="section-tag">Expected Effects</span>
+            <h2 class="section-title">기대효과</h2>
+            <p class="section-desc">GRDP 도입으로 예상되는 정량적/정성적 효과</p>
+        </div>
+
+        <div class="effects-grid fade-in">
+            <div class="effect-card">
+                <div class="effect-icon">1</div>
+                <div class="effect-value">50%</div>
+                <div class="effect-label">의사결정 시간 단축</div>
+                <div class="effect-desc">정보 통합으로 탐색 시간 절감<br>평균 2주 → 1주</div>
+            </div>
+            <div class="effect-card">
+                <div class="effect-icon">2</div>
+                <div class="effect-value">40%</div>
+                <div class="effect-label">예산 최적화 향상</div>
+                <div class="effect-desc">최적 건물 선정으로 예산 활용도 제고<br>평균 25% → 35%</div>
+            </div>
+            <div class="effect-card">
+                <div class="effect-icon">3</div>
+                <div class="effect-value">67%</div>
+                <div class="effect-label">재조사율 감소</div>
+                <div class="effect-desc">체크리스트 표준화로 정보 누락 방지<br>약 15% → 5%</div>
+            </div>
+            <div class="effect-card">
+                <div class="effect-icon">4</div>
+                <div class="effect-value">427</div>
+                <div class="effect-label">tCO2/년 감축</div>
+                <div class="effect-desc">연간 100동 추가 리모델링<br>10년 누적 10,000 tCO2</div>
+            </div>
+        </div>
+
+        <!-- 공동체 문제해결 기대효과 추가 -->
+        <div class="algorithm-box fade-in" style="margin-top: 2rem; background: linear-gradient(145deg, rgba(132, 94, 194, 0.1), rgba(0, 217, 165, 0.05));">
+            <h3 class="text-center" style="margin-bottom: 2rem; color: var(--accent-2);">공동체 문제해결 기대효과</h3>
+            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 2rem;">
+                <div class="card" style="background: rgba(0,0,0,0.3); text-align: center;">
+                    <div style="font-size: 2rem; margin-bottom: 0.5rem;">1</div>
+                    <h4 style="color: var(--primary); font-size: 1.2rem; margin-bottom: 1rem;">고령화 대응 효과</h4>
+                    <p style="font-size: 0.9rem; color: var(--text-muted);">
+                        <strong style="color: var(--text-light);">경로당 실내환경 개선</strong><br>
+                        동절기 실내온도 18℃→22℃ 향상<br>
+                        어르신 한랭질환 예방<br>
+                        <span style="color: var(--accent-2);">지역사회 노인돌봄 인프라 강화</span>
+                    </p>
+                </div>
+                <div class="card" style="background: rgba(0,0,0,0.3); text-align: center;">
+                    <div style="font-size: 2rem; margin-bottom: 0.5rem;">2</div>
+                    <h4 style="color: var(--primary); font-size: 1.2rem; margin-bottom: 1rem;">저출산 대응 효과</h4>
+                    <p style="font-size: 0.9rem; color: var(--text-muted);">
+                        <strong style="color: var(--text-light);">어린이집 실내공기질 개선</strong><br>
+                        CO2 농도 1000ppm 이하 유지<br>
+                        영유아 호흡기질환 감소<br>
+                        <span style="color: var(--accent-2);">양육 친화적 환경 조성</span>
+                    </p>
+                </div>
+                <div class="card" style="background: rgba(0,0,0,0.3); text-align: center;">
+                    <div style="font-size: 2rem; margin-bottom: 0.5rem;">3</div>
+                    <h4 style="color: var(--primary); font-size: 1.2rem; margin-bottom: 1rem;">지역소멸 대응 효과</h4>
+                    <p style="font-size: 0.9rem; color: var(--text-muted);">
+                        <strong style="color: var(--text-light);">보건소 에너지비용 절감</strong><br>
+                        연간 운영비 30% 절감<br>
+                        절감분 의료서비스 재투자<br>
+                        <span style="color: var(--accent-2);">지방 정주여건 개선</span>
+                    </p>
+                </div>
+            </div>
+            <div style="margin-top: 2rem; text-align: center; padding: 1rem; background: rgba(0,217,165,0.1); border-radius: 12px; border: 1px solid var(--primary);">
+                <p style="font-size: 1rem; color: var(--text-light); margin: 0;">
+                    <strong style="color: var(--primary);">GRDP 우선순위 산정</strong> 시 <strong style="color: var(--accent-2);">이용자 취약도 지표(20%)</strong>를 반영하여<br>
+                    어린이·노인·환자 이용 시설이 <strong>자동으로 상위 우선순위</strong>에 배치됩니다
+                </p>
+            </div>
+        </div>
+
+        <div class="algorithm-box fade-in">
+            <h3 class="text-center mb-4">탄소중립 기여 효과 산출</h3>
+            <div class="table-wrapper">
+                <table class="comparison-table">
+                    <thead>
+                        <tr>
+                            <th>항목</th>
+                            <th>산출식</th>
+                            <th>연간 효과</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>추가 리모델링 동수</td>
+                            <td>효율화 효과</td>
+                            <td>100동/년</td>
+                        </tr>
+                        <tr>
+                            <td>동당 평균 에너지 절감</td>
+                            <td>실측치 평균</td>
+                            <td>9,300 kWh/년</td>
+                        </tr>
+                        <tr>
+                            <td>총 에너지 절감량</td>
+                            <td>100동 × 9,300</td>
+                            <td>930,000 kWh/년</td>
+                        </tr>
+                        <tr class="highlight-cell">
+                            <td><strong>CO2 감축량</strong></td>
+                            <td>930,000 × 0.4594</td>
+                            <td><strong>427 tCO2/년</strong></td>
+                        </tr>
+                        <tr>
+                            <td>10년 누적 효과</td>
+                            <td>427 × 10 × 증가율</td>
+                            <td>약 10,000 tCO2</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+            <p style="text-align: center; margin-top: 1rem; font-size: 0.85rem; color: var(--text-muted);">
+                * 전환계수: 전력 0.4594 kgCO2/kWh (환경부 2023)
+            </p>
+        </div>
+
+        <!-- Comparison with 2024 Winner -->
+        <div class="card fade-in mt-4">
+            <h3 style="margin-bottom: 1.5rem;">기존 수상작 대비 차별점</h3>
+            <div class="table-wrapper">
+                <table class="comparison-table">
+                    <thead>
+                        <tr>
+                            <th>구분</th>
+                            <th>2024 우수상 (그린리모델링 MAP)</th>
+                            <th>GRDP (본 제안)</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>대상 사용자</td>
+                            <td>일반 국민</td>
+                            <td class="highlight-cell">지자체 실무 담당자</td>
+                        </tr>
+                        <tr>
+                            <td>주요 기능</td>
+                            <td>위치 검색, 정보 조회</td>
+                            <td class="highlight-cell">의사결정 지원, 시뮬레이션</td>
+                        </tr>
+                        <tr>
+                            <td>핵심 가치</td>
+                            <td>인식 확산, 홍보</td>
+                            <td class="highlight-cell">업무 효율화, 정책 가속화</td>
+                        </tr>
+                        <tr>
+                            <td>데이터 활용</td>
+                            <td>정적 정보 표시</td>
+                            <td class="highlight-cell">동적 분석 및 예측</td>
+                        </tr>
+                        <tr>
+                            <td>기대 효과</td>
+                            <td>방문 체험 유도</td>
+                            <td class="highlight-cell">리모델링 실행 촉진</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </section>
+
+    <!-- Roadmap -->
+    <section id="roadmap">
+        <div class="section-header fade-in">
+            <span class="section-tag">Roadmap</span>
+            <h2 class="section-title">추진 로드맵</h2>
+            <p class="section-desc">24개월 단계별 추진 계획</p>
+        </div>
+
+        <div class="roadmap fade-in">
+            <div class="roadmap-item">
+                <div class="roadmap-content left">
+                    <span class="roadmap-phase">1단계 | 6개월 | 3억원</span>
+                    <h4 class="roadmap-title">기반 구축</h4>
+                    <p class="roadmap-desc">데이터 연계 체계 구축, 프로토타입 개발</p>
+                </div>
+                <div class="roadmap-dot"></div>
+                <div class="roadmap-content"></div>
+            </div>
+
+            <div class="roadmap-item">
+                <div class="roadmap-content"></div>
+                <div class="roadmap-dot"></div>
+                <div class="roadmap-content">
+                    <span class="roadmap-phase">2단계 | 6개월 | 2억원</span>
+                    <h4 class="roadmap-title">시범 적용</h4>
+                    <p class="roadmap-desc">시범 지자체(5개) 적용, 피드백 반영</p>
+                </div>
+            </div>
+
+            <div class="roadmap-item">
+                <div class="roadmap-content left">
+                    <span class="roadmap-phase">3단계 | 12개월 | 5억원</span>
+                    <h4 class="roadmap-title">전국 확대</h4>
+                    <p class="roadmap-desc">전국 확대, 고도화(AI 추천 등)</p>
+                </div>
+                <div class="roadmap-dot"></div>
+                <div class="roadmap-content"></div>
+            </div>
+        </div>
+
+        <div class="card fade-in text-center" style="margin-top: 3rem;">
+            <h3 style="margin-bottom: 1rem;">총 예상 예산</h3>
+            <div style="font-family: 'Space Grotesk', sans-serif; font-size: 3rem; font-weight: 700; color: var(--primary);">
+                10억원
+            </div>
+            <p style="color: var(--text-muted);">24개월 / 3단계 추진</p>
+        </div>
+
+        <!-- Feasibility -->
+        <div class="stats-container fade-in mt-4">
+            <div class="stats-visual">
+                <h3 class="stats-title">법적/제도적 기반</h3>
+                <ul style="list-style: none; padding: 0;">
+                    <li style="padding: 0.8rem 0; border-bottom: 1px solid rgba(255,255,255,0.1);">
+                        <strong style="color: var(--primary);">녹색건축물 조성 지원법</strong><br>
+                        <span style="color: var(--text-muted); font-size: 0.9rem;">그린리모델링 정의 및 지원 근거</span>
+                    </li>
+                    <li style="padding: 0.8rem 0; border-bottom: 1px solid rgba(255,255,255,0.1);">
+                        <strong style="color: var(--primary);">공공데이터법</strong><br>
+                        <span style="color: var(--text-muted); font-size: 0.9rem;">정부 데이터 개방 및 활용 근거</span>
+                    </li>
+                    <li style="padding: 0.8rem 0; border-bottom: 1px solid rgba(255,255,255,0.1);">
+                        <strong style="color: var(--primary);">탄소중립기본법</strong><br>
+                        <span style="color: var(--text-muted); font-size: 0.9rem;">건물부문 온실가스 감축 의무</span>
+                    </li>
+                    <li style="padding: 0.8rem 0;">
+                        <strong style="color: var(--primary);">전자정부법</strong><br>
+                        <span style="color: var(--text-muted); font-size: 0.9rem;">행정정보 공동이용 근거</span>
+                    </li>
+                </ul>
+            </div>
+
+            <div class="stats-visual">
+                <h3 class="stats-title">기술적 기반</h3>
+                <ul style="list-style: none; padding: 0;">
+                    <li style="padding: 0.8rem 0; border-bottom: 1px solid rgba(255,255,255,0.1);">
+                        <strong style="color: var(--primary);">데이터</strong><br>
+                        <span style="color: var(--text-muted); font-size: 0.9rem;">PEIS, 건물에너지 통합DB 등 이미 구축/공개</span>
+                    </li>
+                    <li style="padding: 0.8rem 0; border-bottom: 1px solid rgba(255,255,255,0.1);">
+                        <strong style="color: var(--primary);">인프라</strong><br>
+                        <span style="color: var(--text-muted); font-size: 0.9rem;">정부통합전산센터(G-클라우드) 활용 가능</span>
+                    </li>
+                    <li style="padding: 0.8rem 0;">
+                        <strong style="color: var(--primary);">기술</strong><br>
+                        <span style="color: var(--text-muted); font-size: 0.9rem;">웹 기반 플랫폼, Open API 연계 등 성숙된 기술</span>
+                    </li>
+                </ul>
+            </div>
+        </div>
+
+        <!-- References -->
+        <div class="references fade-in">
+            <h3>참고문헌</h3>
+            <ol>
+                <li>2050탄소중립녹색성장위원회, "2030 국가 온실가스 감축목표(NDC) 상향안", 2021</li>
+                <li>국토교통부, "2025년 공공건축물 그린리모델링 지원사업 공고", 2024</li>
+                <li>국토교통부, "공공건축물 그린리모델링 지원사업 가이드라인", 2024</li>
+                <li>대한건축학회, "공공건축물 그린리모델링 사전조사의 수행과정 및 활용에 따른 장애사항 분석", 2024</li>
+                <li>한국에너지공단, "빅데이터 기반 건물에너지 소비패턴 진단 플랫폼", 2017</li>
+                <li>공공건축물 에너지소비량 정보관리시스템(PEIS), https://peis.greentogether.go.kr/</li>
+                <li>2050 탄소중립 포털, https://www.2050cnc.go.kr/</li>
+            </ol>
+        </div>
+    </section>
+
+    <!-- Closing Section - 마무리 -->
+    <section id="closing" style="padding: 6rem 2rem; text-align: center; position: relative; overflow: hidden;">
+        <!-- 배경 효과 -->
+        <div style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: linear-gradient(180deg, transparent 0%, rgba(0, 217, 165, 0.05) 50%, rgba(132, 94, 194, 0.05) 100%); z-index: -1;"></div>
+
+        <div style="max-width: 900px; margin: 0 auto;">
+            <!-- 핵심 메시지 -->
+            <div class="fade-in" style="margin-bottom: 4rem;">
+                <p style="font-size: 1.5rem; color: var(--accent); font-weight: 500; margin-bottom: 1rem;">
+                    현재 속도로는
+                </p>
+                <h2 style="font-family: 'Space Grotesk', sans-serif; font-size: clamp(2.5rem, 5vw, 4rem); font-weight: 700; line-height: 1.3; margin-bottom: 2rem;">
+                    <span style="color: var(--text-light);">2050 탄소중립</span><br>
+                    <span style="background: linear-gradient(135deg, var(--accent), #FF8F6B); -webkit-background-clip: text; -webkit-text-fill-color: transparent;">불가능합니다</span>
+                </h2>
+            </div>
+
+            <!-- 화살표 -->
+            <div class="fade-in" style="font-size: 3rem; margin: 2rem 0; color: var(--primary);">↓</div>
+
+            <!-- GRDP 역할 -->
+            <div class="fade-in" style="margin-bottom: 4rem;">
+                <div style="display: inline-block; padding: 2rem 3rem; background: var(--bg-card); border-radius: 24px; border: 2px solid var(--primary); box-shadow: 0 0 60px rgba(0, 217, 165, 0.2);">
+                    <p style="font-size: 1.8rem; font-weight: 700; color: var(--text-light); margin-bottom: 0.5rem;">
+                        <span style="color: var(--primary);">GRDP</span>는 정책을 <span style="color: var(--primary);">가속화</span>합니다
+                    </p>
+                    <p style="font-size: 1.1rem; color: var(--text-muted);">
+                        지자체 담당자의 의사결정을 도와 그린리모델링을 촉진
+                    </p>
+                </div>
+            </div>
+
+            <!-- 두 마리 토끼 -->
+            <div class="fade-in" style="display: flex; justify-content: center; gap: 2rem; flex-wrap: wrap; margin-bottom: 4rem;">
+                <div style="display: flex; align-items: center; gap: 1rem; padding: 1.5rem 2rem; background: rgba(0, 217, 165, 0.1); border-radius: 16px; border: 1px solid rgba(0, 217, 165, 0.3);">
+                    <span style="font-size: 2.5rem;">🌱</span>
+                    <div style="text-align: left;">
+                        <p style="font-size: 1.3rem; font-weight: 700; color: var(--primary); margin: 0;">탄소 감축</p>
+                        <p style="font-size: 0.9rem; color: var(--text-muted); margin: 0;">10년 누적 10,000 tCO2</p>
+                    </div>
+                </div>
+                <div style="display: flex; align-items: center; font-size: 2rem; color: var(--text-muted);">+</div>
+                <div style="display: flex; align-items: center; gap: 1rem; padding: 1.5rem 2rem; background: rgba(132, 94, 194, 0.1); border-radius: 16px; border: 1px solid rgba(132, 94, 194, 0.3);">
+                    <span style="font-size: 2.5rem;">👨‍👩‍👧‍👦</span>
+                    <div style="text-align: left;">
+                        <p style="font-size: 1.3rem; font-weight: 700; color: var(--accent-2); margin: 0;">공동체 문제 해결</p>
+                        <p style="font-size: 0.9rem; color: var(--text-muted); margin: 0;">고령화·저출산·지역소멸 대응</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 마무리 메시지 -->
+            <div class="fade-in">
+                <p style="font-size: 2rem; font-weight: 700; background: linear-gradient(135deg, var(--primary), var(--accent-2)); -webkit-background-clip: text; -webkit-text-fill-color: transparent;">
+                    두 마리 토끼를 함께 잡는 플랫폼
+                </p>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer>
+        <div class="footer-logo">GRDP</div>
+        <p class="footer-text">
+            공공건축물 그린리모델링 의사결정 지원 플랫폼<br>
+            Green Remodeling Decision Platform
+        </p>
+
+        <!-- 감사합니다 -->
+        <div style="margin: 3rem 0;">
+            <p style="font-family: 'Space Grotesk', sans-serif; font-size: 3rem; font-weight: 700; background: linear-gradient(135deg, var(--primary), var(--accent-2)); -webkit-background-clip: text; -webkit-text-fill-color: transparent;">
+                감사합니다
+            </p>
+        </div>
+
+        <span class="footer-badge">제5회 그린리모델링 챌린지 | 정책 아이디어 발굴</span>
+        <p style="margin-top: 2rem; color: var(--text-muted); font-size: 0.85rem;">
+            개인 참가 | 박용환
+        </p>
+    </footer>
+
+    <!-- Scroll to Top -->
+    <div class="scroll-indicator" onclick="scrollToTop()">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#1A1A2E" stroke-width="2">
+            <path d="M18 15l-6-6-6 6"/>
+        </svg>
+    </div>
+
+    <script>
+        // UI Tab Switching
+        function showUI(tabId) {
+            // Remove active from all tabs and contents
+            document.querySelectorAll('.ui-tab').forEach(tab => tab.classList.remove('active'));
+            document.querySelectorAll('.ui-content').forEach(content => content.classList.remove('active'));
+
+            // Add active to selected
+            event.target.classList.add('active');
+            document.getElementById(tabId).classList.add('active');
+        }
+
+        // Scroll to Top
+        function scrollToTop() {
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+
+        // Show/Hide Scroll Indicator
+        window.addEventListener('scroll', () => {
+            const indicator = document.querySelector('.scroll-indicator');
+            if (window.scrollY > 500) {
+                indicator.classList.add('visible');
+            } else {
+                indicator.classList.remove('visible');
+            }
+        });
+
+        // Fade in on scroll
+        const observerOptions = {
+            threshold: 0.1,
+            rootMargin: '0px 0px -50px 0px'
+        };
+
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.classList.add('visible');
+                }
+            });
+        }, observerOptions);
+
+        document.querySelectorAll('.fade-in').forEach(el => observer.observe(el));
+
+        // Smooth scroll for nav links
+        document.querySelectorAll('nav a').forEach(link => {
+            link.addEventListener('click', (e) => {
+                e.preventDefault();
+                const targetId = link.getAttribute('href');
+                document.querySelector(targetId).scrollIntoView({ behavior: 'smooth' });
+            });
+        });
+    </script>
+</body>
+</html>

@@ -17,6 +17,7 @@ import {
   Leaf,
   Menu,
   X,
+  Presentation,
 } from 'lucide-react';
 import { useState, useEffect } from 'react';
 
@@ -28,6 +29,7 @@ const navigation = [
   { name: '시뮬레이션', href: '/simulation', icon: Calculator },
   { name: '체크리스트', href: '/checklist', icon: ClipboardCheck },
   { name: '프로젝트 소개', href: '/about', icon: Info },
+  { name: '발표자료', href: '/presentation.html', icon: Presentation, external: true },
 ];
 
 export function Sidebar() {
@@ -124,45 +126,66 @@ export function Sidebar() {
               const isActive = item.href === '/'
                 ? pathname === '/'
                 : pathname.startsWith(item.href);
+              const isExternal = 'external' in item && item.external;
+
+              const linkContent = (
+                <>
+                  {/* Active background with glow */}
+                  {isActive && (
+                    <div className="absolute inset-0 rounded-xl bg-gradient-to-r from-teal-500/20 to-cyan-500/20 border border-teal-500/30" />
+                  )}
+
+                  {/* Neon glow indicator for active item */}
+                  {isActive && (
+                    <div className="absolute left-0 top-1/2 -translate-y-1/2 w-1 h-6 rounded-r-full bg-gradient-to-b from-teal-400 to-cyan-400 shadow-lg shadow-teal-500/50" />
+                  )}
+
+                  <div className={cn(
+                    'relative z-10 flex items-center justify-center w-8 h-8 rounded-lg transition-all',
+                    isActive
+                      ? 'bg-gradient-to-br from-teal-500 to-cyan-500 shadow-md shadow-teal-500/30'
+                      : 'bg-slate-800/50'
+                  )}>
+                    <item.icon className={cn(
+                      'h-4 w-4 flex-shrink-0',
+                      isActive ? 'text-white' : 'text-slate-400'
+                    )} />
+                  </div>
+
+                  {/* 모바일에서는 항상 표시, 데스크탑에서는 collapsed 상태에 따라 */}
+                  <span className={cn(
+                    'relative z-10',
+                    collapsed ? 'lg:hidden' : ''
+                  )}>{item.name}</span>
+                </>
+              );
+
+              const linkClassName = cn(
+                'relative flex items-center gap-3 rounded-xl px-3 py-3 text-sm font-medium transition-all duration-200',
+                isActive
+                  ? 'text-white'
+                  : 'text-slate-400 hover:text-white hover:bg-white/5'
+              );
+
               return (
                 <li key={item.name}>
-                  <Link
-                    href={item.href}
-                    className={cn(
-                      'relative flex items-center gap-3 rounded-xl px-3 py-3 text-sm font-medium transition-all duration-200',
-                      isActive
-                        ? 'text-white'
-                        : 'text-slate-400 hover:text-white hover:bg-white/5'
-                    )}
-                  >
-                    {/* Active background with glow */}
-                    {isActive && (
-                      <div className="absolute inset-0 rounded-xl bg-gradient-to-r from-teal-500/20 to-cyan-500/20 border border-teal-500/30" />
-                    )}
-
-                    {/* Neon glow indicator for active item */}
-                    {isActive && (
-                      <div className="absolute left-0 top-1/2 -translate-y-1/2 w-1 h-6 rounded-r-full bg-gradient-to-b from-teal-400 to-cyan-400 shadow-lg shadow-teal-500/50" />
-                    )}
-
-                    <div className={cn(
-                      'relative z-10 flex items-center justify-center w-8 h-8 rounded-lg transition-all',
-                      isActive
-                        ? 'bg-gradient-to-br from-teal-500 to-cyan-500 shadow-md shadow-teal-500/30'
-                        : 'bg-slate-800/50'
-                    )}>
-                      <item.icon className={cn(
-                        'h-4 w-4 flex-shrink-0',
-                        isActive ? 'text-white' : 'text-slate-400'
-                      )} />
-                    </div>
-
-                    {/* 모바일에서는 항상 표시, 데스크탑에서는 collapsed 상태에 따라 */}
-                    <span className={cn(
-                      'relative z-10',
-                      collapsed ? 'lg:hidden' : ''
-                    )}>{item.name}</span>
-                  </Link>
+                  {isExternal ? (
+                    <a
+                      href={item.href}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className={linkClassName}
+                    >
+                      {linkContent}
+                    </a>
+                  ) : (
+                    <Link
+                      href={item.href}
+                      className={linkClassName}
+                    >
+                      {linkContent}
+                    </Link>
+                  )}
                 </li>
               );
             })}
